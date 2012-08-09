@@ -1,22 +1,19 @@
 //page view control
 var buttonFlag = false ;
 
-$(window).resize(function() {
+$(window).resize(function(){
 	viewRoomListInit();
 	formPosition();
 	resizeContent();
 });
 
-$("div[data-role='page']").live( "pageshow", function( event )
-{
+$("div[data-role='page']").live( "pageshow", function( event ){
 	viewRoomListInit();
 	resizeContent();
 	formPosition();
-
 });
 
-function resizeContent()
-{
+function resizeContent(){
 	var header_obj = $("div[data-role='header']") ; // get object header
 	var footer_obj = $("div[data-role='footer']") ; // get object footer
 	var browserHeight = document.documentElement.clientHeight; // get browser height
@@ -40,14 +37,12 @@ function resizeContent()
 		// if os is iphone , content height becomes more higher than PC browser. because 
 		$("div[data-role='content']").css("height" , contentHeight + 60); 
 	}
-	else{
-		// normal browser
+	else{// normal browser
 		$("div[data-role='content']").css("height" , contentHeight);
 	}
 }
 
 // url : index
-
 function formPosition(){ // set form position about "login" and "join" input 
 	var Y = getNowScroll().Y;
 	var height;
@@ -83,17 +78,14 @@ function view_clear(){ // non-display to join, login form
 	document.getElementById("login").style.display = "none";
 }
 
-
 function doLogin(obj){
 	// call "doLogin" function of index.php file in controller directory
-	$.ajax({type:'POST',url:"/index/doLogin/",data:{userID:obj.find('input[name=id]').val(),password:obj.find('input[name=pw]').val()}})
-	.done(function(data){
-		if(data=="false") 				// login fail
+	$.post("/doLogin/",
+	{userID:obj.find('input[name=id]').val(),password:obj.find('input[name=pw]').val()}
+	,function(data){
+		if(data=="false") // login fail
 			alert("사용자 ID가 잘못되었거나, 비밀번호가 잘못되었습니다.");
-		else if(data=='existslogin'){	// already logined
-			alert("이미 로그인 되어 계시네요!\n방 목록 페이지로 이동합니다~");
-			location.href="/roomlist/";
-		} else if(data=="true")			// login success
+		else	// login success
 			location.href="/roomlist/";
 	});
 }
@@ -132,14 +124,12 @@ function doJoin(form){ // join
 	var id = obj.find('input[name=id]').val();
 	var pw = obj.find('input[name=pw]').val();
 	var nickname = obj.find('input[name=nick_name]').val();
-	$.ajax({type:"POST",url:"/index/doJoin/",data:{userID:id,password:pw,nickname:nickname}})
-	.done(function(data){
+	$.post("/index/doJoin/",
+		{userID:id,password:pw,nickname:nickname},
+		function(data){
 		if(data=="false")
 			alert("정보가 잘못 입력되었습니다.\n입력 한 정보를 다시 입력해 주세요.");
-		else if(data=='existsjogin'){
-			alert("이미 로그인 되어 계시네요!\n방 목록 페이지로 이동합니다~");
-			location.href="/roomlist/";
-		} else if(data=="true") {
+		else{
 			alert("가입이 완료 되었습니다.\n로그인 버튼을 눌러 로그인 해 주세요.");
 			view_clear();
 			view('login');
@@ -205,16 +195,16 @@ function loadRoomList(start){
 						'[<span class="roomnumber">'+list[a].room_seq+'</span>]<span> '+list[a].name+'</span>'+ // room sequence
 						'<span class="gametype">'+
 							'[<span> '+list[a].currentuser+' / '+list[a].maxuser+' </span>]&nbsp;'+ // user number
-							'<img src="/resource/img/'+(parseInt(list[a].start) ? 'playing' : 'waiting')+'_icon.png"/>&nbsp;'; // playing / non-playing
+							'<img src="/media/img/'+(parseInt(list[a].start) ? 'playing' : 'waiting')+'_icon.png"/>&nbsp;'; // playing / non-playing
 					
 			switch(list[a].gametype){
-				case "빙고" : 	str += '<img src="/resource/img/bingo_icon.png"/>'; break;
-				case "주사위" : 	str += '<img src="/resource/img/dice_icon.png"/>'; break;
-				case "사다리" : 	str += '<img src="/resource/img/ladder_icon.png"/>'; break;
-				case "해적" : 	str += '<img src="/resource/img/pirate_icon.png"/>'; break;
+				case "빙고" : 	str += '<img src="/media/img/bingo_icon.png"/>'; break;
+				case "주사위" : 	str += '<img src="/media/img/dice_icon.png"/>'; break;
+				case "사다리" : 	str += '<img src="/media/img/ladder_icon.png"/>'; break;
+				case "해적" : 	str += '<img src="/media/img/pirate_icon.png"/>'; break;
 			}
 			str+=	'&nbsp;'+
-							'<img class="lock" src="/resource/img/'+(list[a].password ? 'lock':'unlock')+'_icon.png"/>'+
+							'<img class="lock" src="/media/img/'+(list[a].password ? 'lock':'unlock')+'_icon.png"/>'+
 						'</span>'+
 					'</h3>'+
 					'<p>'+
@@ -253,7 +243,7 @@ function loadRoomList(start){
 			var passwd = 0 ;
 			var permission 	= 1 ;
 			var lock 		= $(this).parent().parent().parent().parent().find('.lock').attr('src') ; // get locked / unlocked room
-			if(lock == "/resource/img/lock_icon.png"){
+			if(lock == "/media/img/lock_icon.png"){
 				room_seq= parseInt($(this).parent().parent().parent().find('.roomnumber').text()); // get room sequence number
 				passwd 	= $(this).parent().parent().parent().find('.password').attr('value'); // get room password
 				if(!passwd){
@@ -319,8 +309,7 @@ function loadUserStatus(){ // not yet implementation
 }
 /******************************************************************/
 function doLogout(){ // log out
-	$.ajax({url:"/roomlist/doLogout/"})
-	.done(function(){
+	$.post("/doLogout/",function(){
 		alert("로그아웃 되었습니다~");
 		location.href="/";
 	});
@@ -333,3 +322,41 @@ function viewGameOption(value){ // view game option
 	$("#game_4").css("display","none");
 	$("#game_"+value).css("display","block");
 }
+
+$(document).ajaxSend(function(event, xhr, settings) {
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    function sameOrigin(url) {
+        // url could be relative or scheme relative or absolute
+        var host = document.location.host; // host + port
+        var protocol = document.location.protocol;
+        var sr_origin = '//' + host;
+        var origin = protocol + sr_origin;
+        // Allow absolute or scheme relative URLs to same origin
+        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+            (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+            // or any other URL that isn't scheme relative or absolute i.e relative.
+            !(/^(\/\/|http:|https:).*/.test(url));
+    }
+    function safeMethod(method) {
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+
+    if (!safeMethod(settings.type) && sameOrigin(settings.url)) {
+        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+    }
+});

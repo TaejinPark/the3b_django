@@ -4,7 +4,7 @@ import south
 ROOT_PATH = os.path.dirname(__file__)
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
@@ -121,11 +121,12 @@ INSTALLED_APPS = (
     #'django.contrib.sites',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
+    'south',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'db',
     'www',
-    'south',
+    
 )
 
 # A sample logging configuration. The only tangible logging

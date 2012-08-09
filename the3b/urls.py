@@ -17,7 +17,17 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^$','www.views.index'),
-    url(r'^$','www.views.roomlist'),
+
+    #index view url
+    url(r'^$','www.index.index'),
+    url(r'^index/','www.index.index'),
+	url(r'^doLogin/','www.index.doLogin'),
+    url(r'^doJogin/','www.index.doJogin'),
+
+    #room view url
+    url(r'^doLogout/','www.roomlist.doLogout'),
+    url(r'^roomlist/','www.roomlist.index'),
+    
+    #media(js,css,image file) url
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': ROOT_PATH+'/../media/'}),
 )

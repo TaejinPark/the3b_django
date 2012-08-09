@@ -26,12 +26,12 @@ MAX_USER=(	(2,'2명'),
 OUTCOME=((	u'W',u'승리'),
 			(u'L',u'패배'))
 
-class Member(models.Model):
-	userID 	 	= models.CharField(max_length=80,null=False,primary_key=True)
-	password 	= models.CharField(max_length=32,null=False)
-	nickname 	= models.CharField(max_length=100,null=False)
+
+class Member(models.Model):# member db table
+	userID 	 	= models.CharField(max_length=80,null=False,primary_key=True) #user id 
+	password 	= models.CharField(max_length=32,null=False)# password
+	nickname 	= models.CharField(max_length=100,null=False)# user nickname
 	penalty  	= models.PositiveSmallIntegerField(default=0,null=True)
-	sessionid 	= models.CharField(max_length=32,blank=True)
 	participation=models.ForeignKey('Room',blank=True,null=True)
 
 
@@ -44,7 +44,6 @@ class Result(models.Model):
 
 
 class Room(models.Model):
-
 	title		= models.CharField(max_length=100,null=False)
 	maxuser 	= models.PositiveSmallIntegerField(max_length=1,choices=MAX_USER,null=False)
 	private 	= models.CharField(max_length=1,choices=PRIVATE_FLAG,null=False)
