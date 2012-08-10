@@ -17,7 +17,7 @@ def index(request):
 def doLogin(request):
 	if request.is_ajax() and request.method == 'POST': #check request data
 		m = Member.objects.get(userID=request.POST['userID']) #get userID from request data
-		if m.password == request.POST['password']: #compare password
+		if m.password == md5.md5(request.POST['password']).hexdigest(): #compare password
 			discardSession(request) #discard already exist session
 			request.session['userID'] = m.userID #make new session
 			return HttpResponse('true')
@@ -35,7 +35,7 @@ def doJoin(request):
 			newUser = Member()
 			newUser.userID = userID
 			newUser.nickname = userNickname
-			newUser.password = request.POST['password']
+			newUser.password = md5.md5(request.POST['password']).hexdigest()
 			print newUser.userID , newUser.nickname , newUser.password , newUser.penalty , newUser.participation
 			newUser.save()
 			

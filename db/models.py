@@ -31,24 +31,28 @@ class Member(models.Model):# member db table
 	userID 	 	= models.CharField(max_length=80,primary_key=True) #user id 
 	password 	= models.CharField(max_length=32)# password
 	nickname 	= models.CharField(max_length=100)# user nickname
-	penalty  	= models.PositiveSmallIntegerField(max_length=10,default=0,null=True)
-	participation=models.ForeignKey('Room',blank=True,null=True)
+	penalty  	= models.PositiveSmallIntegerField(max_length=10,default=0,null=True,blank=True)
+	participation=models.ForeignKey('Room',blank=True,null=True) # room where user is participated
+	
+	def __unicode__(self):
+		return self.userID
 
-class Result(models.Model):
+class Result(models.Model):#Result of game db table
 	userID 		= models.ForeignKey('Member')
 	gametype 	= models.CharField(max_length=2,choices=GAME_TYPE)
 	result 		= models.CharField(max_length=1,choices=OUTCOME,default=u'W');
 	time 		= models.DateTimeField(auto_now_add=True,auto_now=True)
+	
 	def __unicode__(self):
 		return self.id
 
-class Room(models.Model):
-	title		= models.CharField(max_length=100)
-	maxuser 	= models.PositiveSmallIntegerField(max_length=1,choices=MAX_USER)
-	private 	= models.CharField(max_length=1,choices=PRIVATE_FLAG)
-	roomtype 	= models.CharField(max_length=1,choices=ROOM_TYPE)
-	gametype 	= models.CharField(max_length=2,choices=GAME_TYPE)
-	owner 		= models.ForeignKey('Member')
+class Room(models.Model):#Game room information db table
+	title		= models.CharField(max_length=100) #room title
+	maxuser 	= models.PositiveSmallIntegerField(max_length=1,choices=MAX_USER) #max number
+	private 	= models.CharField(max_length=1,choices=PRIVATE_FLAG) #public or non-public
+	roomtype 	= models.CharField(max_length=1,choices=ROOM_TYPE) #instance or normal
+	gametype 	= models.CharField(max_length=2,choices=GAME_TYPE) #bingo , dice , pirate , ladder
+	owner 		= models.ForeignKey('Member') # own
 	start 		= models.CharField(max_length=1,choices=START_FLAG,default=u'W')
 	password 	= models.CharField(max_length=32,null=True,blank=True)
 	gameoption 	= models.TextField(null=True,blank=True)
