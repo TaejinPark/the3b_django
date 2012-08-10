@@ -28,30 +28,27 @@ OUTCOME=((	u'W',u'승리'),
 
 
 class Member(models.Model):# member db table
-	userID 	 	= models.CharField(max_length=80,null=False,primary_key=True) #user id 
-	password 	= models.CharField(max_length=32,null=False)# password
-	nickname 	= models.CharField(max_length=100,null=False)# user nickname
-	penalty  	= models.PositiveSmallIntegerField(default=0,null=True)
-	participation=models.ForeignKey('Room',blank=True,null=True)
-
-	def __unicode__(self):
-		return self.userID
+	userID 	 	= models.CharField(max_length=80,primary_key=True) #user id 
+	password 	= models.CharField(max_length=32)# password
+	nickname 	= models.CharField(max_length=100)# user nickname
+	penalty  	= models.PositiveSmallIntegerField(max_length=10,default=0,null=True)
+	participation=models.ForeignKey('Room',default=None,blank=True,null=True)
 
 class Result(models.Model):
-	userID 		= models.ForeignKey('Member',null=False)
-	gametype 	= models.CharField(max_length=2,choices=GAME_TYPE,null=False)
-	result 		= models.CharField(max_length=1,choices=OUTCOME,default=u'W',null=False);
+	userID 		= models.ForeignKey('Member')
+	gametype 	= models.CharField(max_length=2,choices=GAME_TYPE)
+	result 		= models.CharField(max_length=1,choices=OUTCOME,default=u'W');
 	time 		= models.DateTimeField(auto_now_add=True,auto_now=True)
 	def __unicode__(self):
 		return self.id
 
 class Room(models.Model):
-	title		= models.CharField(max_length=100,null=False)
-	maxuser 	= models.PositiveSmallIntegerField(max_length=1,choices=MAX_USER,null=False)
-	private 	= models.CharField(max_length=1,choices=PRIVATE_FLAG,null=False)
-	roomtype 	= models.CharField(max_length=1,choices=ROOM_TYPE,null=False)
-	gametype 	= models.CharField(max_length=2,choices=GAME_TYPE,null=False)
-	owner 		= models.ForeignKey('Member',null=False)
+	title		= models.CharField(max_length=100)
+	maxuser 	= models.PositiveSmallIntegerField(max_length=1,choices=MAX_USER)
+	private 	= models.CharField(max_length=1,choices=PRIVATE_FLAG)
+	roomtype 	= models.CharField(max_length=1,choices=ROOM_TYPE)
+	gametype 	= models.CharField(max_length=2,choices=GAME_TYPE)
+	owner 		= models.ForeignKey('Member')
 	start 		= models.CharField(max_length=1,choices=START_FLAG,default=u'W')
 	password 	= models.CharField(max_length=32,null=True,blank=True)
 	gameoption 	= models.TextField(null=True,blank=True)
