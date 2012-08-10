@@ -21,8 +21,10 @@ urlpatterns = patterns('',
     #index view url
     url(r'^$','www.index.index'),
     url(r'^index/','www.index.index'),
-	url(r'^doLogin/','www.index.doLogin'),
-    url(r'^doJogin/','www.index.doJogin'),
+    url(r'^doLogin/','www.index.doLogin'),
+    url(r'^doJoin/','www.index.doJoin'),
+    url(r'^isExistID/','www.index.isExistID'),
+    url(r'^isExistNickname/','www.index.isExistNickname'),
 
     #room view url
     url(r'^doLogout/','www.roomlist.doLogout'),

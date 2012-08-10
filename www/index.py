@@ -23,15 +23,36 @@ def doLogin(request):
 		else:
 			return HttpResponse('false')#not exist id or mismatch id and password
 
-def doJogin(request):
+def doJoin(request):
 	if request.is_ajax() and request.method == 'POST':
-		if Member.objects.get(userID = request.POST['userID']) or Member.objects.get(nickname = request.POST['nickname']):
-			return HttpResponse('false')
+		
+		#get data from POST data
 		userID = request.POST['userID']
-		password = md5.md5(request.POST['password']).hexdigest()
+		password = request.POST['password']
 		nickname = request.POST['nickname']
-
+		
+		#save to the database
 		newUser = Member()
 		newUser.userID = userID
-		newUser.password = password
-		newUser.nickname = nickname 
+		newUser.password = md5.md5(password).hexdigest()
+		newUser.nickname = nickname
+		newUser.save()
+
+def isExistID(request): #check ID overlappiing
+	if request.is_ajax() and request.method == 'POST':
+		if Member.objects.filter(userID = request.POST['userID']):
+			return HttpResponse('false')
+		else:
+			return HttpResponse('true')
+	else:
+		return HttpResponse('false')
+
+def isExistNickname(request): #check nickname overlapping
+	if request.is_ajax() and request.method == 'POST':
+		if Member.objects.filter(nickname = request.POST['nickname']):
+			return HttpResponse('false')
+		else:
+			return HttpResponse('true')
+	else:
+		return HttpResponse('false')
+

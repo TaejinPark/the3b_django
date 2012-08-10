@@ -100,7 +100,7 @@ function vaildForm(){ // check input values
 	switch(obj.attr('name')){
 		case 'id':
 			// call "isExistID" function of index.php file in controller directory
-			$.ajax({type:"POST",url:"/index/isExistID/",data:{userID:obj.val()}}).done(function(data){
+			$.post("/isExistID/",{userID:obj.val()},function(data){
 				if(data=="false") spanobj.text('불가능');
 				else if(data=="true") spanobj.text('가능');
 			});
@@ -110,8 +110,7 @@ function vaildForm(){ // check input values
 			else spanobj.text('가능');
 		break;
 		case 'nick_name':
-			$.ajax({type:"POST",url:"/index/isExistNickname/",data:{nickname:obj.val()}})
-			.done(function(data){
+			$.post("/isExistNickname/",{nickname:obj.val()},function(data){
 				if(data=="false") spanobj.text('불가능');
 				else if(data=="true") spanobj.text('가능');
 			});
@@ -124,7 +123,7 @@ function doJoin(form){ // join
 	var id = obj.find('input[name=id]').val();
 	var pw = obj.find('input[name=pw]').val();
 	var nickname = obj.find('input[name=nick_name]').val();
-	$.post("/index/doJoin/",
+	$.post("/doJoin/",
 		{userID:id,password:pw,nickname:nickname},
 		function(data){
 		if(data=="false")

@@ -34,14 +34,16 @@ class Member(models.Model):# member db table
 	penalty  	= models.PositiveSmallIntegerField(default=0,null=True)
 	participation=models.ForeignKey('Room',blank=True,null=True)
 
+	def __unicode__(self):
+		return self.userID
 
 class Result(models.Model):
 	userID 		= models.ForeignKey('Member',null=False)
 	gametype 	= models.CharField(max_length=2,choices=GAME_TYPE,null=False)
 	result 		= models.CharField(max_length=1,choices=OUTCOME,default=u'W',null=False);
 	time 		= models.DateTimeField(auto_now_add=True,auto_now=True)
-	
-
+	def __unicode__(self):
+		return self.id
 
 class Room(models.Model):
 	title		= models.CharField(max_length=100,null=False)
@@ -53,3 +55,6 @@ class Room(models.Model):
 	start 		= models.CharField(max_length=1,choices=START_FLAG,default=u'W')
 	password 	= models.CharField(max_length=32,null=True,blank=True)
 	gameoption 	= models.TextField(null=True,blank=True)
+
+	def __unicode__(self):
+		return self.id

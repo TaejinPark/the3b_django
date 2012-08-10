@@ -6,3 +6,6 @@ def isLogin(request):
 
 def discardSession(request):
 	request.session['userID'] = 0
+
+def debugMsg(string):
+	print "[SERVER] : ",string
