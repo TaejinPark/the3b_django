@@ -32,7 +32,7 @@ class Member(models.Model):# member db table
 	password 	= models.CharField(max_length=32)# password
 	nickname 	= models.CharField(max_length=100)# user nickname
 	penalty  	= models.PositiveSmallIntegerField(max_length=10,default=0,null=True)
-	participation=models.ForeignKey('Room',default=None,blank=True,null=True)
+	participation=models.ForeignKey('Room',blank=True,null=True)
 
 class Result(models.Model):
 	userID 		= models.ForeignKey('Member')

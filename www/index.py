@@ -13,6 +13,7 @@ def index(request):
 	return render_to_response('index.html')
 
 #/index/doLogin
+@csrf_exempt
 def doLogin(request):
 	if request.is_ajax() and request.method == 'POST': #check request data
 		m = Member.objects.get(userID=request.POST['userID']) #get userID from request data
@@ -23,6 +24,7 @@ def doLogin(request):
 		else:
 			return HttpResponse('false')#not exist id or mismatch id and password
 
+@csrf_exempt
 def doJoin(request):
 	if request.is_ajax() and request.method == 'POST':
 		# check validation
@@ -43,12 +45,14 @@ def doJoin(request):
 	else:
 		HttpResponse('false')
 
+@csrf_exempt
 def isExistID(request): #check ID overlappiing
 	if checkID(request.POST['userID']):
 		return HttpResponse('false')
 	else:
 		return HttpResponse('true')
 
+@csrf_exempt
 def isExistNickname(request): #check nickname overlapping
 	if checkNickname(request.POST['nickname']):
 		return HttpResponse('false')
