@@ -86,48 +86,53 @@ def getRoomListToJson(request):
 			'gameoption': room.gameoption,
 			'start'		: room.start,
 			}) + ','
-		rooms_json = rooms_json + ']'
+		rooms_json += ']'
 	return HttpResponse(rooms_json)
 
 @csrf_exempt
 def getUserInfo(request):
-	pass
+	m = Member.objects.get(userID = request.session['userID'])
+	
+	#get status
 
+	userID = m.userID ;
+	nickname = m.nickname ;
 
+	all_game = Result.objects.filter(userID = userID) # get all result
 
+	diceWin = all_game.filter(gametype = 'D' , result = 'W').count() 	# get dice win result from all result
+	diceLose = all_game.filter(gametype = 'D' , result = 'L').count() 	# get dice lose result from all result
+	bingoWin = all_game.filter(gametype = 'B' , result = 'W').count() 	# get bingo win result from all result
+	bingoLose = all_game.filter(gametype = 'B' , result = 'L').count() 	# get bingo lose result from all result
+	ladderWin = all_game.filter(gametype = 'L' , result = 'W').count()	# get ladder win result from all result
+	ladderLose = all_game.filter(gametype = 'L' , result = 'L').count()	# get ladder lose result from all result	
+	pirateWin = all_game.filter(gametype = 'P' , result = 'W').count()	# get pirate win result from all result
+	pirateLose = all_game.filter(gametype = 'P' , result = 'L').count()	# get pirate lose result from all result
+	
+	all_game_win = diceWin + bingoWin + ladderWin + pirateLose 
+	all_game_lose= diceLose + bingoLose + ladderLose + pirateWin	
 
+	#make json data
+	rooms_json = '['
+	rooms_json += json.dumps( 
+		{'statusUserID'  : userID ,
+		'statusNickname' : nickname,
+		'statusTotal' 	: all_game_lose + all_game_win,
+		'statusWin' 	: all_game_win,
+		'statusLose' 	: all_game_lose,
+		'bingoTotal' 	: bingoWin + bingoLose,
+		'bingoWin' 		: bingoWin,
+		'bingoLose' 	: bingoLose,
+		'diceTotal' 	: diceWin + diceLose,
+		'diceWin' 		: diceWin,
+		'diceLose' 		: diceLose,
+		'ladderTotal' 	: ladderWin + ladderLose,
+		'ladderWin' 	: ladderWin,
+		'ladderLose'	: ladderLose,
+		'pirateTotal'	: pirateWin + pirateLose ,
+		'pirateWin'		: pirateWin,
+		'pirateLose'	: pirateLose
+		}) + ','
+	rooms_json += ']'
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	return HttpResponse(rooms_json)

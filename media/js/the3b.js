@@ -261,27 +261,27 @@ function loadUserStatus(){ // not yet implementation
 			if(!data) return;
 			var tmp = eval(data);
 			tmp=tmp[0];
-			$('#statusUserID').html(tmp['id']);
-			$('#statusNickname').html(tmp['nickname']);
-			$('#statusTotal').html(tmp['total']);
-			$('#statusWin').html(tmp['win']);
-			$('#statusLose').html(tmp['total'] - tmp['win']);
+			$('#statusUserID').html(tmp['statusUserID']);
+			$('#statusNickname').html(tmp['statusNickname']);
+			$('#statusTotal').html(tmp['statusTotal']);
+			$('#statusWin').html(tmp['statusWin']);
+			$('#statusLose').html(tmp['statusLose']);
 
-			$('#bingoTotal').html(tmp['total']);
-			$('#bingoWin').html(tmp['win']);
-			$('#bingoLose').html(tmp['total'] - tmp['win']);
+			$('#bingoTotal').html(tmp['bingoTotal']);
+			$('#bingoWin').html(tmp['bingoWin']);
+			$('#bingoLose').html(tmp['bingoLose']);
 
-			$('#diceTotal').html(tmp['total']);
-			$('#diceWin').html(tmp['win']);
-			$('#diceLose').html(tmp['total'] - tmp['win']);
+			$('#diceTotal').html(tmp['diceTotal']);
+			$('#diceWin').html(tmp['diceWin']);
+			$('#diceLose').html(tmp['diceLose']);
 
-			$('#ladderTotal').html(tmp['total']);
-			$('#ladderWin').html(tmp['win']);
-			$('#ladderLose').html(tmp['total'] - tmp['win']);
+			$('#ladderTotal').html(tmp['ladderTotal']);
+			$('#ladderWin').html(tmp['ladderWin']);
+			$('#ladderLose').html(tmp['ladderLose']);
 
-			$('#pirateTotal').html(tmp['total']);
-			$('#pirateWin').html(tmp['win']);
-			$('#pirateLose').html(tmp['total'] - tmp['win']);
+			$('#pirateTotal').html(tmp['pirateTotal']);
+			$('#pirateWin').html(tmp['pirateWin']);
+			$('#pirateLose').html(tmp['pirateLose']);
 		}
 	);
 }
