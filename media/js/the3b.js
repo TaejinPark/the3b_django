@@ -192,10 +192,11 @@ function viewRoomListInit(){ // initial display setting
 	else												
 		obj2.css("width" , $("#content").width() - width -15); // others
 	obj.width(obj.children('span').width());
-	
+
 	obj = $("#refresh_icon");
 	width = obj.children("span").width();
 	obj2 = $("#search_rooms");
+	
 	if(navigator.userAgent.indexOf('Windows') != -1)	
 		obj2.css("width" , $("#content").width() - width -30); // windows os
 	else												
@@ -209,17 +210,20 @@ function viewRoomListMenu(element){ // select an menu at room list page
 	$("#makeroom").css("display", "none");
 	var obj = document.getElementById(element);
 	
-	if(obj.style.display == "none")	obj.style.display = "block";
-	else							obj.style.display = "none";
-	if(element=="status")			loadUserStatus();
+	if(obj.style.display == "none")
+		obj.style.display = "block";
+	else
+		obj.style.display = "none";
+	if(element=="status")			
+		loadUserStatus();
 	buttonFlag = true;
 }
 
 function viewGameOption(value){ // view game option 
-	$("#game_1").css("display","none");
-	$("#game_2").css("display","none");
-	$("#game_3").css("display","none");
-	$("#game_4").css("display","none");
+	$("#game_B").css("display","none");
+	$("#game_D").css("display","none");
+	$("#game_L").css("display","none");
+	$("#game_P").css("display","none");
 	$("#game_"+value).css("display","block");
 }
 
@@ -290,8 +294,10 @@ function loadRoomList(start){
 	{start:start,keyword:$('input[name=search]:eq(0)').val(),type:$('select[name=find_room_by_type]').val()},
 	function(data){
 		if(!data) return;
+		
 		var list = eval(data);
 		if(list.length==0) $('#roomlist > a').css('display','none');
+		
 		var str = '';
 		for(var a=0,loopa=list.length; a<loopa; a++){
 			if(parseInt(list[a]["private"])) continue ; // privacy room is non-displayed
@@ -339,10 +345,13 @@ function loadRoomList(start){
 					'</p>'+
 				'</div>';
 		}
+		
 		if(start==0) {
 			$('#RoomList').html(str).parent().trigger("create");
 			$('#roomlist > a').css('display','block');
-		} else $('#RoomList').append(str).parent().trigger("create");
+		} 
+		else $('#RoomList').append(str).parent().trigger("create");
+		
 		$('#RoomList .join').unbind('click').click(function(){
 			var room_seq = 0 ;
 			var passwd = 0 ;

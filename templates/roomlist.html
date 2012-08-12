@@ -74,11 +74,11 @@
 					<!-- /select game type to search room-->
 					<div id="find_room_by_type" class="ui-block-a">
 						<select name="find_room_by_type" data-native-menu="false">
-							<option value="0"selected="selected">모두</option>
-							<option value="1">빙고</option>
-							<option value="2">주사위</option>
-							<option value="3">사다리</option>
-							<option value="4">해적</option>
+							<option value="A"selected="selected">모두</option>
+							<option value="B">빙고</option>
+							<option value="D">주사위</option>
+							<option value="L">사다리</option>
+							<option value="P">해적</option>
 						</select>
 					</div>
 					<!-- /select game type to search room-->
@@ -223,22 +223,22 @@
 							<option value="P">해적</option>
 						</select>
 					</div>
-					<div id="game_1">
+					<div id="game_B">
 						<label for="gameoption_B">빙고 줄</label>
 						<input type="range" name="gameoption_B" id="gameoption_1" value="1" min="1" max="5" data-theme="a" data-track-theme="b"/>
 					</div>
-					<div id="game_2" class="dspn">
+					<div id="game_D" class="dspn">
 						<span>주사위값이 더 큰 사람이</span>
 						<select id="gameoption_D" name="gameoption_D" data-role="slider" data-theme="a">
 							<option value="L">패자</option>
 							<option value="W">승자</option>
 						</select>
 					</div>
-					<div id="game_3" class="dspn">
+					<div id="game_L" class="dspn">
 						방 생성후 조건 입력 
 						<input type="hidden" name="gameoption_L"value="0";>
 					</div>
-					<div id="game_4" class="dspn">
+					<div id="game_P" class="dspn">
 						<span>당첨 칼을 꽂는 사람이</span>
 						<select id="gameoption_P" name="gameoption_P" data-role="slider" data-theme="a">
 							<option value="L">패자</option>
