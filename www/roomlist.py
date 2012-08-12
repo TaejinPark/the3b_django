@@ -94,21 +94,39 @@ def getUserInfo(request):
 	m = Member.objects.get(userID = request.session['userID'])
 	
 	#get status
-
 	userID = m.userID ;
 	nickname = m.nickname ;
-
 	all_game = Result.objects.filter(userID = userID) # get all result
 
-	diceWin = all_game.filter(gametype = 'D' , result = 'W').count() 	# get dice win result from all result
-	diceLose = all_game.filter(gametype = 'D' , result = 'L').count() 	# get dice lose result from all result
-	bingoWin = all_game.filter(gametype = 'B' , result = 'W').count() 	# get bingo win result from all result
-	bingoLose = all_game.filter(gametype = 'B' , result = 'L').count() 	# get bingo lose result from all result
-	ladderWin = all_game.filter(gametype = 'L' , result = 'W').count()	# get ladder win result from all result
-	ladderLose = all_game.filter(gametype = 'L' , result = 'L').count()	# get ladder lose result from all result	
-	pirateWin = all_game.filter(gametype = 'P' , result = 'W').count()	# get pirate win result from all result
-	pirateLose = all_game.filter(gametype = 'P' , result = 'L').count()	# get pirate lose result from all result
-	
+	#declare variables
+	diceWin = 0
+	diceLose = 0
+	bingoWin = 0
+	bingoLose = 0
+	ladderWin = 0
+	ladderLose = 0
+	pirateWin = 0
+	pirateLose = 0
+
+	# get user win or lose
+	for R in all_game:
+		if R.gametype == 'D' and R.result == 'W':
+			diceWin += 1 # get dice win result from all result
+		elif R.gametype == 'D' and R.result == 'L':
+			diceLose += 1 # get dice lose result from all result
+		elif R.gametype == 'B' and R.result == 'W':
+			bingoWin +=  1 # get bingo win result from all result
+		elif R.gametype == 'B' and R.result == 'L':
+			bingoLose  += 1 # get bingo lose result from all result
+		elif R.gametype == 'L' and R.result == 'W':
+			ladderWin += 1 # get ladder win result from all result
+		elif R.gametype == 'L' and R.result == 'L':
+			ladderWin += 1 # get ladder lose result from all result	
+		elif R.gametype == 'P' and R.result == 'W':
+			pirateWin += 1 # get pirate win result from all result
+		elif R.gametype == 'P' and R.result == 'L':
+			pirateLose += 1 # get pirate lose result from all result
+
 	all_game_win = diceWin + bingoWin + ladderWin + pirateLose 
 	all_game_lose= diceLose + bingoLose + ladderLose + pirateWin	
 
