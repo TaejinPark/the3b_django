@@ -33,7 +33,7 @@ def doMakeRoom(request):
 	
 	#save room data to database
 	room.save()
-
+	
 	return HttpResponse(room.seq)
 
 @csrf_exempt

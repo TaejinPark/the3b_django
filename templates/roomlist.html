@@ -14,6 +14,13 @@
 		var currentStart = 0; // current searching room index
 		$(document).ready(function(){
 			viewRoomListInit();
+			$.post("/checkLogin/",
+			function(data){
+				if(data=="false")// already login
+					alert('로그인을 해 주세요\n메인화면으로 이동합니다.')
+					location.href="/index/";
+				}
+			);
 			/*$.ajax({type:"POST",url:"/server/isServerOn/"}).done(function(data){//check server is working				
 				if(!parseInt(data)){
 					alert("서버 점검중입니다. 운영자에게 문의 해 주세요. 메인화면으로 이동 합니다.");

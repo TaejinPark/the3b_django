@@ -166,16 +166,15 @@ function doJoin(form){ // join
 		{userID:id,password:pw,nickname:nickname},
 		function(data){
 		if(data=="false")
-			alert("정보가 잘:134못 입력되었습니다.\n입력 한 정보를 다시 입력해 주세요.");
+			alert("정보가 잘못 입력되었습니다.\n입력 한 정보를 다시 입력해 주세요.");
 		else{
-			alert("가입이 완료 되었습니다.\n로그인 버튼을 눌러 로그인 해 주세요.");
 			//form clear
 			obj.find('input[name=id]').val('');
 			obj.find('input[name=pw]').val('');
 			obj.find('input[name=pw_verify]').val('');
 			obj.find('input[name=nick_name]').val('');
 			view_clear();
-			view_join_login('login');
+			location.href="/roomlist/";
 		}
 	});
 }
