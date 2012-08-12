@@ -1,6 +1,5 @@
 # Django settings for the3b project.
 import os
-import south
 ROOT_PATH = os.path.dirname(__file__)
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -14,7 +13,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'the3b_db',                      # Or path to database file if using sqlite3.
+        'NAME': 'database',                      # Or path to database file if using sqlite3.
         'USER': 'admin',                      # Not used with sqlite3.
         'PASSWORD': 'admin',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -121,12 +120,10 @@ INSTALLED_APPS = (
     #'django.contrib.sites',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
-    'south',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'db',
     'www',
-    
 )
 
 # A sample logging configuration. The only tangible logging

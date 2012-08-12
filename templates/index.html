@@ -7,14 +7,19 @@
 		<link   href="/media/js/jquery/jquery.mobile-1.1.0.css" rel="stylesheet"/>
 		<script src ="http://code.jquery.com/jquery-1.6.4.min.js"></script>
 		<script src ="/media/js/jquery/jquery.mobile-1.1.0.min.js"></script>
-		<script src ="/media/js/T3B.js"></script>
+		<script src ="/media/js/the3b.js"></script>
 		<link 	rel="stylesheet" href="/media/css/T3B.css">
 		<script>
 		$("div[data-role='page']").live("pageshow",function(event){
+			$.post("/checkLogin/",
+			function(data){
+				if(data=="true")// already login
+					location.href="/roomlist/";
+				}
+			);
 			$('#join input').blur(vaildForm);
 			$(".login").click(function(){view_join_login('login');});	// display / non-display login form
 			$(".join").click(function(){view_join_login('join');});	// display / non-display join form
-			$(".guest").click(function(){doGuestLogin();}); // do login as guest
 			$('#login form').submit(function(){doLogin($(this));return false;});// do login process
 			$('#join form').submit(function(){doJoin($(this));return false;});// do join process
 			$("#content").click(function(){view_clear();});// clear login and join form
@@ -35,8 +40,7 @@
 		<div id ="header" data-role="header" data-position="fixed" data-theme="b">
 			<div class="padding menu">
 				<span class="login">Login</span><span> | </span>
-				<span class="join">Join </span><span> | </span>
-				<span class="guest">Guest</span>
+				<span class="join">Join </span>
 			</div>
 		</div>
 		<!-- /header -->

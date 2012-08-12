@@ -18,7 +18,7 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 
-    #index view url
+    #index url
     url(r'^$','www.index.index'),
     url(r'^index/','www.index.index'),
     url(r'^doLogin/','www.index.doLogin'),
@@ -26,10 +26,15 @@ urlpatterns = patterns('',
     url(r'^isExistID/','www.index.isExistID'),
     url(r'^isExistNickname/','www.index.isExistNickname'),
 
-    #room view url
+    #roomlist url
     url(r'^doLogout/','www.roomlist.doLogout'),
     url(r'^roomlist/','www.roomlist.index'),
+    url(r'^doMakeRoom/','www.roomlist.doMakeRoom'),
+    url(r'^getRoomListToJson/','www.roomlist.getRoomListToJson'),
     
+    #functions url
+    url(r'^checkLogin/','www.functions.checkLogin'),
+
     #media(js,css,image file) url
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': ROOT_PATH+'/../media/'}),
 )

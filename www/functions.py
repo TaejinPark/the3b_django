@@ -1,11 +1,29 @@
-def isLogin(request):
-	if request.session['userID'] == m.userID:
-		return true
-	else:
+# -*- coding: utf-8 -*-
+from django.http import HttpResponse
+from django.shortcuts import render_to_response
+from django.http import Http404, HttpResponseRedirect
+from django.core.urlresolvers import reverse
+from django.views.decorators.csrf import csrf_exempt
+
+
+#manage session
+def checkSession(request):
+	try:
+		if request.session['userID']:
+			return True
+	except:
 		return False
 
 def discardSession(request):
-	request.session['userID'] = 0
+	del request.session['userID']
 
-def debugMsg(string):
-	print "[SERVER] : ",string
+def setSession(request,userID):
+	request.session['userID'] = userID
+
+#manage login
+@csrf_exempt
+def checkLogin(request):
+	if checkSession(request):
+		return HttpResponse('true')
+	else:
+		return HttpResponse('false')

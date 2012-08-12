@@ -8,29 +8,46 @@
 		<link href="/media/js/jquery/jquery.mobile-1.1.0.css" rel="stylesheet"/>
 		<script src ="http://code.jquery.com/jquery-1.6.4.min.js"></script>
 		<script src ="/media/js/jquery/jquery.mobile-1.1.0.min.js"></script>
-		<script src ="/media/js/T3B.js"></script>
+		<script src ="/media/js/the3b.js"></script>
 		<link rel="stylesheet" href="/media/css/T3B.css" />
 		<script type="text/javascript">
 		var currentStart = 0; // current searching room index
 		$(document).ready(function(){
 			viewRoomListInit();
-			$.ajax({type:"POST",url:"/server/isServerOn/"}).done(function(data){//check server is working				
+			/*$.ajax({type:"POST",url:"/server/isServerOn/"}).done(function(data){//check server is working				
 				if(!parseInt(data)){
 					alert("서버 점검중입니다. 운영자에게 문의 해 주세요. 메인화면으로 이동 합니다.");
 					location.href="/";
 				}
 				else
 					loadRoomList(0);// initialy view max 15 rooms 
+			});*/
+			loadRoomList(0);// initialy view max 15 rooms 
+			$('select[name=find_room_by_type]').change(function(){ // fillter room list by gametype of rooms
+				currentStart=0;
+				loadRoomList(0);
 			});
-			$('select[name=find_room_by_type]').change(function(){currentStart=0;loadRoomList(0);}); // fillter room list by gametype of rooms
-			$('span.reload').click(function(){currentStart=0;loadRoomList(0);}); // refresh room list
-			$('#makeroombutton').click(function(){makeRoom($(this).parent().parent()); return false;}); // go menu about making room
-			$('#roomlist > a').click(function(){currentStart+=15;loadRoomList(currentStart);}); // search 15 more rooms
+			$('span.reload').click(function(){ // refresh room list
+				currentStart=0;
+				loadRoomList(0);
+			});
+			$('#roomlist > a').click(function(){ // search 15 more rooms
+				currentStart+=15;
+				loadRoomList(currentStart);
+			});
 			$('#head ul li a')// when click header tab menu list
 				.eq(0).click(function(){viewRoomListMenu('roomlist');}).end() //  go to first tab menu about searching rooms
 				.eq(1).click(function(){viewRoomListMenu('status');}).end()	//	go to second tab menu about viewing user's status
 				.eq(2).click(function(){doLogout();});	// go to third menu about logging out
-			$('#make_icon').click(function(){viewRoomListMenu('makeroom');}); // make room menu
+			$('#make_icon').click(function(){ // make room menu
+				viewRoomListMenu('makeroom');
+			});
+			$('#makeroombutton').click(function(){
+				var obj = $(this).parent().parent();
+				makeRoom(obj);
+				return false;
+			}); // go menu about making room
+			
 		});
 		</script>
 	</head>
@@ -180,15 +197,15 @@
 				<div class="fl">
 					<label for="private">공개 / 비 공개</label>
 					<select name="private" id="private" data-role="slider" data-theme="a">
-						<option value="0">공개</option>
-						<option value="1">비공개</option>
+						<option value="P">공개</option>
+						<option value="S">비공개</option>
 					</select> 
 				</div>
 				<div class="fl ml40">
 					<label for="roomtype">방종류</label>
 					<select name="roomtype" id="roomtype" data-role="slider" data-theme="a">
-						<option value="0">1회성</option>
-						<option value="1">일반</option>
+						<option value="I">1회성</option>
+						<option value="N">일반</option>
 					</select> 
 				</div>
 				<div class="width80 clear">
@@ -200,32 +217,32 @@
 					<span>게임 옵션</span>
 					<div>
 						<select name="gametype" data-native-menu="false" onchange="viewGameOption(value)">
-							<option value="1" selected="selected">빙고</option>
-							<option value="2">주사위</option>
-							<option value="3">사다리</option>
-							<option value="4">해적</option>
+							<option value="B" selected="selected">빙고</option>
+							<option value="D">주사위</option>
+							<option value="L">사다리</option>
+							<option value="P">해적</option>
 						</select>
 					</div>
 					<div id="game_1">
-						<label for="gameoption_1">빙고 줄</label>
-						<input type="range" name="gameoption_1" id="gameoption_1" value="1" min="1" max="5" data-theme="a" data-track-theme="b"/>
+						<label for="gameoption_B">빙고 줄</label>
+						<input type="range" name="gameoption_B" id="gameoption_1" value="1" min="1" max="5" data-theme="a" data-track-theme="b"/>
 					</div>
 					<div id="game_2" class="dspn">
 						<span>주사위값이 더 큰 사람이</span>
-						<select id="gameoption_2" name="gameoption_2" data-role="slider" data-theme="a">
-							<option value="0">패자</option>
-							<option value="1">승자</option>
+						<select id="gameoption_D" name="gameoption_D" data-role="slider" data-theme="a">
+							<option value="L">패자</option>
+							<option value="W">승자</option>
 						</select>
 					</div>
 					<div id="game_3" class="dspn">
 						방 생성후 조건 입력 
-						<input type="hidden" name="gameoption_3"value="0";>
+						<input type="hidden" name="gameoption_L"value="0";>
 					</div>
 					<div id="game_4" class="dspn">
 						<span>당첨 칼을 꽂는 사람이</span>
-						<select id="gameoption_4" name="gameoption_4" data-role="slider" data-theme="a">
-							<option value="0">패자</option>
-							<option value="1">승자</option>
+						<select id="gameoption_P" name="gameoption_P" data-role="slider" data-theme="a">
+							<option value="L">패자</option>
+							<option value="W">승자</option>
 						</select> 
 					</div>
 				</div>

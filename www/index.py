@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from django.views.decorators.csrf import csrf_exempt
 from db.models import *
 from www.functions import *
-import md5 
+import md5
 
 #/index/
 def index(request):
@@ -18,8 +18,7 @@ def doLogin(request):
 	if request.is_ajax() and request.method == 'POST': #check request data
 		m = Member.objects.get(userID=request.POST['userID']) #get userID from request data
 		if m.password == md5.md5(request.POST['password']).hexdigest(): #compare password
-			discardSession(request) #discard already exist session
-			request.session['userID'] = m.userID #make new session
+			setSession(request,m.userID)#make new session
 			return HttpResponse('true')
 		else:
 			return HttpResponse('false')#not exist id or mismatch id and password
@@ -31,14 +30,13 @@ def doJoin(request):
 		userID = request.POST['userID']
 		userNickname = request.POST['nickname']
 		if (checkID(userID) == False) and (checkNickname(userNickname) == False) :
-			#save to the database
+			#set data to Member instance
 			newUser = Member()
 			newUser.userID = userID
 			newUser.nickname = userNickname
 			newUser.password = md5.md5(request.POST['password']).hexdigest()
-			print newUser.userID , newUser.nickname , newUser.password , newUser.penalty , newUser.participation
-			newUser.save()
-			
+			newUser.save()#save to the database
+			setSession(request,userID)
 			return HttpResponse('true')
 		else:
 			return HttpResponse('false')
@@ -70,3 +68,4 @@ def checkNickname(Nickname):
 		return True
 	else:
 		return False
+

@@ -1,17 +1,19 @@
 from django.contrib import admin
-from db.models import Member
-from db.models import Room
-from db.models import Result
+from db.models import *
 
 class MemberAdmin(admin.ModelAdmin):
-	list_display = ('userID', 'nickname','password','participation','penalty')
+	list_display = ('userID', 'nickname','password','sessionid','penalty')
 
 class RoomAdmin(admin.ModelAdmin):
-	list_display = ('title', 'maxuser', 'private', 'roomtype', 'gametype', 'owner', 'start', 'password', 'gameoption')
+	list_display = ('seq' , 'name', 'maxuser', 'private', 'roomtype', 'gametype', 'owner', 'start', 'password', 'gameoption')
 
 class ResultAdmin(admin.ModelAdmin):
 	list_display = ('userID', 'gametype', 'result', 'time')
 
+class MemberInRoomAdmin(admin.ModelAdmin):
+	list_display = ('room', 'user', 'ready')
+
 admin.site.register(Member,MemberAdmin)
 admin.site.register(Room,RoomAdmin)
 admin.site.register(Result,ResultAdmin)
+admin.site.register(MemberInRoom,MemberInRoomAdmin)
