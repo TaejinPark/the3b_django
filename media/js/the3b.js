@@ -304,14 +304,14 @@ function loadRoomList(start){
 					'<h3>'+
 						'[<span class="roomnumber">'+list[a].room_seq+'</span>]<span> '+list[a].name+'</span>'+ // room sequence
 						'<span class="gametype">'+
-							'[<span> '+list[a].currentuser+' / '+list[a].maxuser+' </span>]&nbsp;'+ // user number
+							'[<span> '+list[a].participant+' / '+list[a].maxuser+' </span>]&nbsp;'+ // user number
 							'<img src="/media/img/'+(parseInt(list[a].start) ? 'playing' : 'waiting')+'_icon.png"/>&nbsp;'; // playing / non-playing
 					
 			switch(list[a].gametype){
-				case "빙고" : 	str += '<img src="/media/img/bingo_icon.png"/>'; break;
-				case "주사위" : 	str += '<img src="/media/img/dice_icon.png"/>'; break;
-				case "사다리" : 	str += '<img src="/media/img/ladder_icon.png"/>'; break;
-				case "해적" : 	str += '<img src="/media/img/pirate_icon.png"/>'; break;
+				case "B" : 	str += '<img src="/media/img/bingo_icon.png"/>'; break;
+				case "D" : 	str += '<img src="/media/img/dice_icon.png"/>'; break;
+				case "L" : 	str += '<img src="/media/img/ladder_icon.png"/>'; break;
+				case "P" : 	str += '<img src="/media/img/pirate_icon.png"/>'; break;
 			}
 			str+=	'&nbsp;'+
 							'<img class="lock" src="/media/img/'+(list[a].password ? 'lock':'unlock')+'_icon.png"/>'+
@@ -319,7 +319,7 @@ function loadRoomList(start){
 					'</h3>'+
 					'<p>'+
 					'<div>참가자 : '+
-						'<span>'+list[a].currentuser+'</span>/'+
+						'<span>'+list[a].participant+'</span>/'+
 						'<span>'+list[a].maxuser+'</span>'+
 					'</div>'+
 						'<div>게임 종류 : '+
@@ -328,10 +328,10 @@ function loadRoomList(start){
 					'<div>게임 옵션 : ';
 
 			switch(list[a].gametype){
-				case "빙고" : 	str += '승리 빙고 : '+'<b>' + list[a].gameoption+'줄 </b>' ; break;
-				case "주사위" : 	str += '주사위 숫자가 큰 사람이 <b>' + (list[a].gameoption ? '승리' : '패배') +'</b>'; break; 
-				case "사다리" : 	str += '방 접속시 공개' ; break;
-				case "해적" : 	str += '당첨 칼을 꽂는 사람이 <b>' + (list[a].gameoption ? '승리' : '패배') + '</b>'; break; 
+				case "B" : 	str += '승리 빙고 : '+'<b>' + list[a].gameoption+'줄 </b>' ; break;
+				case "D" : 	str += '주사위 숫자가 큰 사람이 <b>' + (list[a].gameoption ? '승리' : '패배') +'</b>'; break; 
+				case "L" : 	str += '방 접속시 공개' ; break;
+				case "P" : 	str += '당첨 칼을 꽂는 사람이 <b>' + (list[a].gameoption ? '승리' : '패배') + '</b>'; break; 
 			}
 			str +=	'</div>';
 					

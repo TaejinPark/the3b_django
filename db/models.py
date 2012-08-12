@@ -56,7 +56,7 @@ class Room(models.Model):#Game room information db table
 	seq			= models.AutoField(primary_key=True)
 	name		= models.CharField(max_length=100) #room title
 	maxuser 	= models.PositiveSmallIntegerField(max_length=1,choices=MAX_USER) #max number
-	participant = models.PositiveSmallIntegerField(max_length=1,choices=MAX_USER,default=1)
+	participant = models.PositiveSmallIntegerField(max_length=1,default=1)
 	private 	= models.CharField(max_length=1,choices=PRIVATE_FLAG) #public or non-public
 	roomtype 	= models.CharField(max_length=1,choices=ROOM_TYPE) #instance or normal
 	gametype 	= models.CharField(max_length=2,choices=GAME_TYPE) #bingo , dice , pirate , ladder

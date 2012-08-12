@@ -8,6 +8,7 @@ from db.models import Member
 from db.models import Room
 from www.functions import *
 import json
+import md5
 
 #/index/
 def index(request):
@@ -24,16 +25,21 @@ def doMakeRoom(request):
 	room.name		= request.POST['name']
 	room.maxuser	= request.POST['maxuser']
 	room.private	= request.POST['private']
+	room.participant= 1
 	room.roomtype	= request.POST['roomtype']
 	room.gametype	= request.POST['gametype']
 	room.owner		= Member.objects.get(userID = request.session['userID'])
 	room.start		= u'W'
-	room.password	= request.POST['password']
 	room.gameoption	= request.POST['gameoption_'+room.gametype]
+	
+	if request.POST['password'] != '' :
+		room.password	= md5.md5(request.POST['password']).hexdigest()
+	else:
+		room.password	= request.POST['password']
 	
 	#save room data to database
 	room.save()
-	
+
 	return HttpResponse(room.seq)
 
 @csrf_exempt
@@ -59,9 +65,10 @@ def getRoomListToJson(request):
 		rooms_json = '[' 
 		for room in roomlist:
 			rooms_json += json.dumps( 
-			{'seq'		:room.seq,
+			{'room_seq'		:room.seq,
 			'name'		: room.name,
 			'maxuser'	: room.maxuser,
+			'participant':room.participant,
 			'private'	: room.private,
 			'roomtype'	: room.roomtype,
 			'gametype'	: room.gametype,
