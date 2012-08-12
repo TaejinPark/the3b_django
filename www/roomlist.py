@@ -4,8 +4,7 @@ from django.shortcuts import render_to_response
 from django.http import Http404, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.views.decorators.csrf import csrf_exempt
-from db.models import Member
-from db.models import Room
+from db.models import *
 from www.functions import *
 import json
 import md5
@@ -14,6 +13,7 @@ import md5
 def index(request):
 	return render_to_response('roomlist.html')
 
+@csrf_exempt
 def doLogout(request):
 	discardSession(request)
 	return HttpResponse('true')
@@ -31,14 +31,13 @@ def doMakeRoom(request):
 	room.owner		= Member.objects.get(userID = request.session['userID'])
 	room.start		= u'W'
 	room.gameoption	= request.POST['gameoption_'+room.gametype]
-	
-	if request.POST['password'] != '' :
+
+	if request.POST['password'] != '' : # if password is exist
 		room.password	= md5.md5(request.POST['password']).hexdigest()
-	else:
+	else: # if password not exist
 		room.password	= request.POST['password']
 	
-	#save room data to database
-	room.save()
+	room.save()#save room data to database
 
 	return HttpResponse(room.seq)
 
@@ -59,11 +58,21 @@ def getRoomListToJson(request):
 	#excute query and get data
 	roomlist = Room.objects.filter(name__icontains = keyword , gametype__in = gametype)
 	
-	if roomlist.count() == 0: #if data is empty
+	room_number = roomlist.count() #get the number of rooms
+	
+	if room_number == 0: #if data is empty
 		rooms_json = '[]' #there is no waiting room
+	
 	else : #make room list as JSON
-		rooms_json = '[' 
-		for room in roomlist:
+		start = int(start)
+		end = room_number - start
+		if end > 15:
+			end = start + 15
+		else:
+			end += start
+
+		rooms_json = '['
+		for room in roomlist[start:end] :
 			rooms_json += json.dumps( 
 			{'room_seq'		:room.seq,
 			'name'		: room.name,
@@ -72,7 +81,7 @@ def getRoomListToJson(request):
 			'private'	: room.private,
 			'roomtype'	: room.roomtype,
 			'gametype'	: room.gametype,
-			'owner'		: room.owner.userID,
+			'owner'		: room.owner,
 			'password'	: room.password,
 			'gameoption': room.gameoption,
 			'start'		: room.start,
@@ -80,8 +89,9 @@ def getRoomListToJson(request):
 		rooms_json = rooms_json + ']'
 	return HttpResponse(rooms_json)
 
-
-
+@csrf_exempt
+def getUserInfo(request):
+	pass
 
 
 

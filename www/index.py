@@ -40,6 +40,7 @@ def doJoin(request):
 			return HttpResponse('true')
 		else:
 			return HttpResponse('false')
+
 	else:
 		HttpResponse('false')
 

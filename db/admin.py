@@ -11,7 +11,7 @@ class ResultAdmin(admin.ModelAdmin):
 	list_display = ('userID', 'gametype', 'result', 'time')
 
 class MemberInRoomAdmin(admin.ModelAdmin):
-	list_display = ('room', 'user', 'ready')
+	list_display = ('room_seq', 'userID', 'ready')
 
 admin.site.register(Member,MemberAdmin)
 admin.site.register(Room,RoomAdmin)

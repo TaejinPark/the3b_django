@@ -256,32 +256,34 @@ function makeRoom(obj){
  
 /******************************************************************/
 function loadUserStatus(){ // not yet implementation 
-	$.ajax({url:"/roomlist/getUserInfo/"}).done(function(data){
-		if(!data) return;
-		var tmp = eval(data);
-		tmp=tmp[0];
-		$('#statusUserID').html(tmp['id']);
-		$('#statusNickname').html(tmp['nickname']);
-		$('#statusTotal').html(tmp['total']);
-		$('#statusWin').html(tmp['win']);
-		$('#statusLose').html(tmp['total'] - tmp['win']);
+	$.post("/getUserInfo/",
+		function(data){
+			if(!data) return;
+			var tmp = eval(data);
+			tmp=tmp[0];
+			$('#statusUserID').html(tmp['id']);
+			$('#statusNickname').html(tmp['nickname']);
+			$('#statusTotal').html(tmp['total']);
+			$('#statusWin').html(tmp['win']);
+			$('#statusLose').html(tmp['total'] - tmp['win']);
 
-		$('#bingoTotal').html(tmp['total']);
-		$('#bingoWin').html(tmp['win']);
-		$('#bingoLose').html(tmp['total'] - tmp['win']);
+			$('#bingoTotal').html(tmp['total']);
+			$('#bingoWin').html(tmp['win']);
+			$('#bingoLose').html(tmp['total'] - tmp['win']);
 
-		$('#diceTotal').html(tmp['total']);
-		$('#diceWin').html(tmp['win']);
-		$('#diceLose').html(tmp['total'] - tmp['win']);
+			$('#diceTotal').html(tmp['total']);
+			$('#diceWin').html(tmp['win']);
+			$('#diceLose').html(tmp['total'] - tmp['win']);
 
-		$('#ladderTotal').html(tmp['total']);
-		$('#ladderWin').html(tmp['win']);
-		$('#ladderLose').html(tmp['total'] - tmp['win']);
+			$('#ladderTotal').html(tmp['total']);
+			$('#ladderWin').html(tmp['win']);
+			$('#ladderLose').html(tmp['total'] - tmp['win']);
 
-		$('#pirateTotal').html(tmp['total']);
-		$('#pirateWin').html(tmp['win']);
-		$('#pirateLose').html(tmp['total'] - tmp['win']);
-	});
+			$('#pirateTotal').html(tmp['total']);
+			$('#pirateWin').html(tmp['win']);
+			$('#pirateLose').html(tmp['total'] - tmp['win']);
+		}
+	);
 }
 /******************************************************************/
 
@@ -295,7 +297,7 @@ function loadRoomList(start){
 		if(!data) return;
 		
 		var list = eval(data);
-		if(list.length==0) $('#roomlist > a').css('display','none');
+		if(list.length < 15) $('#roomlist > a').css('display','none');
 		
 		var str = '';
 		for(var a=0,loopa=list.length; a<loopa; a++){

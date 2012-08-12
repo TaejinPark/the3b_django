@@ -31,7 +31,7 @@ urlpatterns = patterns('',
     url(r'^roomlist/','www.roomlist.index'),
     url(r'^doMakeRoom/','www.roomlist.doMakeRoom'),
     url(r'^getRoomListToJson/','www.roomlist.getRoomListToJson'),
-    
+    url(r'^getUserInfo/','www.roomlist.getUserInfo'),
     #functions url
     url(r'^checkLogin/','www.functions.checkLogin'),
 

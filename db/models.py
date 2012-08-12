@@ -15,23 +15,20 @@ class Member(models.Model):# member db table
 	penalty  	= models.PositiveSmallIntegerField(max_length=10,default=0,null=True,blank=True)
 
 	def entries(self):
-		print self.userID , self.nickname , self.password , self.sessionid
+		print type(self) , self.userID , self.nickname , self.password , self.sessionid
 	
 
 class Result(models.Model):#Result of game db table	
 	OUTCOME=(	(u'W',u'승리'),
 				(u'L',u'패배'))
 
-	userID 		= models.ForeignKey('Member')
-	gametype 	= models.CharField(max_length=2,choices=GAME_TYPE)
-	result 		= models.CharField(max_length=1,choices=OUTCOME,default=u'W');
+	userID 		= models.CharField(max_length=80) #user id 
+	gametype 	= models.CharField(max_length=2,choices=GAME_TYPE,default=u'B')
+	result 		= models.CharField(max_length=2,choices=OUTCOME,default=u'W');
 	time 		= models.DateTimeField(auto_now_add=True,auto_now=True)
 
-	def __unicode__(self):
-		print self.userID
-
 	def entries(self):
-		print self.userID , self.gametype , self.result , self.time
+		print type(self) , self.userID , self.gametype , self.result , self.time
 
 
 
@@ -60,14 +57,14 @@ class Room(models.Model):#Game room information db table
 	private 	= models.CharField(max_length=1,choices=PRIVATE_FLAG) #public or non-public
 	roomtype 	= models.CharField(max_length=1,choices=ROOM_TYPE) #instance or normal
 	gametype 	= models.CharField(max_length=2,choices=GAME_TYPE) #bingo , dice , pirate , ladder
-	owner 		= models.ForeignKey('Member') # own
-	start 		= models.CharField(max_length=1,choices=START_FLAG,default=u'W')
-	password 	= models.CharField(max_length=32,null=True,blank=True)
-	gameoption 	= models.TextField(null=True,blank=True)
+	owner 		= models.CharField(max_length=80) # owner
+	start 		= models.CharField(max_length=1,choices=START_FLAG,default=u'W') # is game start ?
+	password 	= models.CharField(max_length=32,null=True,blank=True) # room password
+	gameoption 	= models.TextField(null=True,blank=True) # game option
 
 
 	def entries(self):
-		print self.name ,',', self.maxuser ,',', self.private ,',', self.roomtype ,',', 
+		print type(self) , self.name ,',', self.maxuser ,',', self.private ,',', self.roomtype ,',', 
 		print self.gametype ,',', self.owner.userID ,',', self.start ,',', self.password ,',', self.gameoption
 
 
@@ -75,13 +72,13 @@ class MemberInRoom(models.Model):
 	READY_FLAG=((u'R',u'준비'),
 				(u'W',u'대기'))
 
-	room		= models.ForeignKey(Room)
-	user		= models.ForeignKey(Member)
+	room_seq	= models.PositiveIntegerField()
+	userID		= models.CharField(max_length=80)
 	ready		= models.CharField(max_length=1,choices=READY_FLAG,default=u'W')
 	anonymous	= models.PositiveSmallIntegerField(max_length=1,default=0)
 	
 	def entries(self):
-		print self.room , self.user , self.ready , self.anonymous
+		print type(self) , self.room_seq , self.userID , self.ready , self.anonymous
 
 
 
