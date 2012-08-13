@@ -180,7 +180,13 @@ function doJoin(form){ // join
 }
 
 // url: /roomlist/
-
+function doWithdraw(){
+	$.post('/doWithdraw/',
+		function(){
+			alert('탈퇴 처리 되었습니다.\n그동안 이용해 주셔서 감사합니다.');
+			location.href = '/';
+	});
+}
 function viewRoomListInit(){ // initial display setting
 	var obj = $("#make_icon");
 	var width = $("#make_icon").children("span").width();

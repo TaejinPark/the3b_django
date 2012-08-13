@@ -19,6 +19,22 @@ def doLogout(request):
 	return HttpResponse('true')
 
 @csrf_exempt
+def doWithdraw(request):
+	#get user name
+	userID = request.session['userID']
+	
+	# delete member
+	Member.objects.get(userID = userID).delete()
+
+	# delete all result of withdraw member
+	Result.objects.filter(userID = userID).delete()
+	
+	# discard session 
+	discardSession(request) 
+
+	return HttpResponse('true')
+
+@csrf_exempt
 def doMakeRoom(request):
 	#make Room instance and fill values
 	room = Room()
@@ -32,12 +48,16 @@ def doMakeRoom(request):
 	room.start		= u'W'
 	room.gameoption	= request.POST['gameoption_'+room.gametype]
 
-	if request.POST['password'] != '' : # if password is exist
+	# if password is exist
+	if request.POST['password'] != '' : 
 		room.password	= md5.md5(request.POST['password']).hexdigest()
-	else: # if password not exist
+	
+	# if password not exist
+	else: 
 		room.password	= request.POST['password']
 	
-	room.save()#save room data to database
+	#save room data to database
+	room.save()
 
 	return HttpResponse(room.seq)
 
@@ -58,19 +78,27 @@ def getRoomListToJson(request):
 	#excute query and get data
 	roomlist = Room.objects.filter(name__icontains = keyword , gametype__in = gametype)
 	
-	room_number = roomlist.count() #get the number of rooms
+	#get the number of rooms
+	room_number = roomlist.count()
 	
-	if room_number == 0: #if data is empty
-		rooms_json = '[]' #there is no waiting room
+	#if data is empty
+	if room_number == 0: 
+		#there is no waiting room
+		rooms_json = '[]'
 	
-	else : #make room list as JSON
+	#make room list as JSON
+	else :
+		#set the number of additional room list
 		start = int(start)
 		end = room_number - start
-		if end > 15:
+
+		if end > 15: 
+			#15 room list is shown per when user request
 			end = start + 15
 		else:
 			end += start
 
+		#make json
 		rooms_json = '['
 		for room in roomlist[start:end] :
 			rooms_json += json.dumps( 
@@ -87,6 +115,7 @@ def getRoomListToJson(request):
 			'start'		: room.start,
 			}) + ','
 		rooms_json += ']'
+
 	return HttpResponse(rooms_json)
 
 @csrf_exempt
@@ -96,7 +125,9 @@ def getUserInfo(request):
 	#get status
 	userID = m.userID ;
 	nickname = m.nickname ;
-	all_game = Result.objects.filter(userID = userID) # get all result
+
+	# get all result
+	all_game = Result.objects.filter(userID = userID) 
 
 	#declare variables
 	diceWin = 0

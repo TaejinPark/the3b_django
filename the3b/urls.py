@@ -32,6 +32,8 @@ urlpatterns = patterns('',
     url(r'^doMakeRoom/','www.roomlist.doMakeRoom'),
     url(r'^getRoomListToJson/','www.roomlist.getRoomListToJson'),
     url(r'^getUserInfo/','www.roomlist.getUserInfo'),
+    url(r'^doWithdraw/','www.roomlist.doWithdraw'),
+    
     #functions url
     url(r'^checkLogin/','www.functions.checkLogin'),
 

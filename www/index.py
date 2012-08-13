@@ -15,13 +15,23 @@ def index(request):
 #/index/doLogin
 @csrf_exempt
 def doLogin(request):
+	print request.POST	
 	if request.is_ajax() and request.method == 'POST': #check request data
-		m = Member.objects.get(userID=request.POST['userID']) #get userID from request data
-		if m.password == md5.md5(request.POST['password']).hexdigest(): #compare password
+		
+		m = Member.objects.filter(userID=request.POST['userID']) #get userID from request data
+
+		if m.count() == 0: #there is no exist userID
+			return HttpResponse('false')
+
+		elif m.password == md5.md5(request.POST['password']).hexdigest(): #compare password
 			setSession(request,m.userID)#make new session
 			return HttpResponse('true')
+		
 		else:
-			return HttpResponse('false')#not exist id or mismatch id and password
+			return HttpResponse('false')#mismatch password	
+	
+	else:
+		return HttpResponse('false')
 
 @csrf_exempt
 def doJoin(request):
