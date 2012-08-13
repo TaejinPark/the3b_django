@@ -7,3 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from db.models import *
 from www.functions import *
 
+#/index/
+def index(request , room_seq):
+	
+	return render_to_response('playroom.html')
