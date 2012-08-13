@@ -357,13 +357,15 @@ function loadRoomList(start){
 			$('#RoomList').html(str).parent().trigger("create");
 			$('#roomlist > a').css('display','block');
 		} 
-		else $('#RoomList').append(str).parent().trigger("create");
+		else 
+			$('#RoomList').append(str).parent().trigger("create");
 		
 		$('#RoomList .join').unbind('click').click(function(){
 			var room_seq = 0 ;
 			var passwd = 0 ;
 			var permission 	= 1 ;
-			var lock 		= $(this).parent().parent().parent().parent().find('.lock').attr('src') ; // get locked / unlocked room
+			var lock = $(this).parent().parent().parent().find('.lock').attr('src'); // get locked / unlocked room
+
 			if(lock == "/media/img/lock_icon.png"){
 				room_seq= parseInt($(this).parent().parent().parent().find('.roomnumber').text()); // get room sequence number
 				passwd 	= $(this).parent().parent().parent().find('.password').attr('value'); // get room password
@@ -371,11 +373,17 @@ function loadRoomList(start){
 					alert("비밀번호를 입력해 주세요")
 					$(this).parent().parent().parent().parent().find('.password').focus(); // focus on password input element
 				}
-				$.ajax({type:"POST",url:"/roomlist/checkRoomPasswd/",data:{passwd:passwd,room_seq:room_seq}}).done(function(check){ // compare user input password with room password
-					if(parseInt(check[14])==1)	location.href="/game/index/"+room_seq+'/'; // go room
-					else				alert("비밀번호가 일치하지 않습니다."); // not match
+
+				$.post("/checkRoomPasswd/",
+				{passwd:passwd,room_seq:room_seq},
+				function(data){ // compare user input password with room password
+					if(data=='true')
+						location.href="/room/"+room_seq+'/'; // go room
+					else
+						alert("비밀번호가 일치하지 않습니다."); // not match
 				});
-			}else location.href="/game/index/"+parseInt($(this).parent().parent().parent().parent().find('.roomnumber').text())+'/'; // go game room
+			}
+			else location.href="/game/index/"+parseInt($(this).parent().parent().parent().parent().find('.roomnumber').text())+'/'; // go game room
 		});
 	});
 }

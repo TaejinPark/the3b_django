@@ -13,6 +13,8 @@ import md5
 def index(request):
 	return render_to_response('roomlist.html')
 
+#member information handling
+
 @csrf_exempt
 def doLogout(request):
 	discardSession(request)
@@ -33,90 +35,6 @@ def doWithdraw(request):
 	discardSession(request) 
 
 	return HttpResponse('true')
-
-@csrf_exempt
-def doMakeRoom(request):
-	#make Room instance and fill values
-	room = Room()
-	room.name		= request.POST['name']
-	room.maxuser	= request.POST['maxuser']
-	room.private	= request.POST['private']
-	room.participant= 1
-	room.roomtype	= request.POST['roomtype']
-	room.gametype	= request.POST['gametype']
-	room.owner		= Member.objects.get(userID = request.session['userID'])
-	room.start		= u'W'
-	room.gameoption	= request.POST['gameoption_'+room.gametype]
-
-	# if password is exist
-	if request.POST['password'] != '' : 
-		room.password	= md5.md5(request.POST['password']).hexdigest()
-	
-	# if password not exist
-	else: 
-		room.password	= request.POST['password']
-	
-	#save room data to database
-	room.save()
-
-	return HttpResponse(room.seq)
-
-@csrf_exempt
-def getRoomListToJson(request):
-
-	#get data to excute query
-	start = request.POST['start']
-	keyword = request.POST['keyword']
-	gametype = request.POST['type']
-	
-	#set game type
-	if gametype == 'A': # all type
-		gametype = [u'B',u'D',u'L',u'P']
-	else:
-		gametype = [gametype]
-
-	#excute query and get data
-	roomlist = Room.objects.filter(name__icontains = keyword , gametype__in = gametype)
-	
-	#get the number of rooms
-	room_number = roomlist.count()
-	
-	#if data is empty
-	if room_number == 0: 
-		#there is no waiting room
-		rooms_json = '[]'
-	
-	#make room list as JSON
-	else :
-		#set the number of additional room list
-		start = int(start)
-		end = room_number - start
-
-		if end > 15: 
-			#15 room list is shown per when user request
-			end = start + 15
-		else:
-			end += start
-
-		#make json
-		rooms_json = '['
-		for room in roomlist[start:end] :
-			rooms_json += json.dumps( 
-			{'room_seq'		:room.seq,
-			'name'		: room.name,
-			'maxuser'	: room.maxuser,
-			'participant':room.participant,
-			'private'	: room.private,
-			'roomtype'	: room.roomtype,
-			'gametype'	: room.gametype,
-			'owner'		: room.owner,
-			'password'	: room.password,
-			'gameoption': room.gameoption,
-			'start'		: room.start,
-			}) + ','
-		rooms_json += ']'
-
-	return HttpResponse(rooms_json)
 
 @csrf_exempt
 def getUserInfo(request):
@@ -185,3 +103,107 @@ def getUserInfo(request):
 	rooms_json += ']'
 
 	return HttpResponse(rooms_json)
+
+
+
+#room information handling
+
+@csrf_exempt
+def checkRoomPasswd(request):
+
+	#get room information
+	room_seq = request.POST['room_seq']
+	password = md5.md5(request.POST['passwd']).hexdigest()
+
+	#is room exist?
+	if Room.objects.filter(seq = room_seq , password = password).count():
+		return HttpResponse('true')
+	else:
+		return HttpResponse('false')
+
+
+@csrf_exempt
+def doMakeRoom(request):
+	#make Room instance and fill values
+	room = Room()
+	room.name		= request.POST['name']
+	room.maxuser	= request.POST['maxuser']
+	room.private	= request.POST['private']
+	room.participant= 1
+	room.roomtype	= request.POST['roomtype']
+	room.gametype	= request.POST['gametype']
+	room.owner		= Member.objects.get(userID = request.session['userID'])
+	room.start		= u'W'
+	room.gameoption	= request.POST['gameoption_'+room.gametype]
+
+	# if password is exist
+	if request.POST['password'] != '' : 
+		room.password	= md5.md5(request.POST['password']).hexdigest()
+	
+	# if password not exist
+	else: 
+		room.password	= request.POST['password']
+	
+	#save room data to database
+	room.save()
+
+	return HttpResponse(room.seq)
+
+
+@csrf_exempt
+def getRoomListToJson(request):
+
+	#get data to excute query
+	start = request.POST['start']
+	keyword = request.POST['keyword']
+	gametype = request.POST['type']
+	
+	#set game type
+	if gametype == 'A': # all type
+		gametype = [u'B',u'D',u'L',u'P']
+	else:
+		gametype = [gametype]
+
+	#excute query and get data
+	roomlist = Room.objects.filter(name__icontains = keyword , gametype__in = gametype)
+	
+	#get the number of rooms
+	room_number = roomlist.count()
+	
+	#if data is empty
+	if room_number == 0: 
+		#there is no waiting room
+		rooms_json = '[]'
+	
+	#make room list as JSON
+	else :
+		#set the number of additional room list
+		start = int(start)
+		end = room_number - start
+
+		if end > 15: 
+			#15 room list is shown per when user request
+			end = start + 15
+		else:
+			end += start
+
+		#make json
+		rooms_json = '['
+		for room in roomlist[start:end] :
+			rooms_json += json.dumps( 
+			{'room_seq'		:room.seq,
+			'name'		: room.name,
+			'maxuser'	: room.maxuser,
+			'participant':room.participant,
+			'private'	: room.private,
+			'roomtype'	: room.roomtype,
+			'gametype'	: room.gametype,
+			'owner'		: room.owner,
+			'password'	: room.password,
+			'gameoption': room.gameoption,
+			'start'		: room.start,
+			}) + ','
+		rooms_json += ']'
+
+	return HttpResponse(rooms_json)
+

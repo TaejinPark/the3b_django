@@ -33,6 +33,7 @@ urlpatterns = patterns('',
     url(r'^getRoomListToJson/','www.roomlist.getRoomListToJson'),
     url(r'^getUserInfo/','www.roomlist.getUserInfo'),
     url(r'^doWithdraw/','www.roomlist.doWithdraw'),
+    url(r'^checkRoomPasswd/','www.roomlist.checkRoomPasswd'),
     
     #functions url
     url(r'^checkLogin/','www.functions.checkLogin'),
