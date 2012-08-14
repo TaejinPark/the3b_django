@@ -260,8 +260,7 @@ function makeRoom(obj){
 	});
 }
  
-/******************************************************************/
-function loadUserStatus(){ // not yet implementation 
+function loadUserStatus(){
 	$.post("/getUserInfo/",
 		function(data){
 			if(!data) return;
@@ -291,9 +290,6 @@ function loadUserStatus(){ // not yet implementation
 		}
 	);
 }
-/******************************************************************/
-
-
 
 function loadRoomList(start){
 	var roomstr = '';
@@ -383,7 +379,7 @@ function loadRoomList(start){
 						alert("비밀번호가 일치하지 않습니다."); // not match
 				});
 			}
-			else location.href="/game/index/"+parseInt($(this).parent().parent().parent().parent().find('.roomnumber').text())+'/'; // go game room
+			else location.href="/room/"+parseInt($(this).parent().parent().parent().parent().find('.roomnumber').text())+'/'; // go game room
 		});
 	});
 }

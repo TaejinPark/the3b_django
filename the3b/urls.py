@@ -36,7 +36,12 @@ urlpatterns = patterns('',
     url(r'^checkRoomPasswd/','www.roomlist.checkRoomPasswd'),
     
     #room url
-    url(r'^room/(?P<room_seq>\d+)/$/','www.room.index'),
+    url(r'^room/(?P<room_seq>\d+)/$','www.room.index'),
+    url(r'^room/(?P<room_seq>\d+)/askexit\.html/$','www.room.askExit'),
+    url(r'^room/(?P<room_seq>\d+)/askplay\.html/$','www.room.askPlay'),
+
+    #websocket
+    url(r'^WS/','www.room.webSocket'),
 
     #functions url
     url(r'^checkLogin/','www.functions.checkLogin'),

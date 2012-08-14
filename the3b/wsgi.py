@@ -1,5 +1,5 @@
 """
-WSGI config for the3b project.
+WSGI config for ws project.
 
 This module contains the WSGI application used by Django's development server
 and any production WSGI deployments. It should expose a module-level variable
@@ -15,14 +15,21 @@ framework.
 """
 import os
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "the3b.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ws.settings")
 
 # This application object is used by any WSGI server configured to use this
 # file. This includes Django's development server, if the WSGI_APPLICATION
 # setting points here.
-from django.core.wsgi import get_wsgi_application
-application = get_wsgi_application()
+# from django.core.wsgi import get_wsgi_application
+
+# application = get_wsgi_application()
 
 # Apply WSGI middleware here.
 # from helloworld.wsgi import HelloWorldApplication
 # application = HelloWorldApplication(application)
+
+from gevent.pywsgi import WSGIServer
+from geventwebsocket.handler import WebSocketHandler
+from django.core.handlers.wsgi import WSGIHandler
+WSGIServer(('', 8000), WSGIHandler(),handler_class=WebSocketHandler).serve_forever()
+

@@ -112,13 +112,21 @@ var interval2 = null;
 var currentNickname = '';
 
 function init(){
-  var host = "ws://115.68.23.155:4279/";
+  var host = "ws://localhost:8000/WS/";
   try{
     socket = new WebSocket(host);
     log('WebSocket - status '+socket.readyState);
-    socket.onopen	= function(msg){ log("Welcome - status "+this.readyState);sendLoginInfo(sid,userid);}
-    socket.onmessage= function(msg){ log("Received: "+msg.data); process(msg.data); };
-    socket.onclose	= function(msg){ log("Disconnected - status "+this.readyState); };
+    socket.onopen	= function(msg){ 
+    	log("Welcome - status "+this.readyState);
+    	sendLoginInfo(sid,userid);
+    }
+    socket.onmessage= function(msg){ 
+    	log("Received: "+msg.data); 
+    	process(msg.data); 
+    }
+    socket.onclose	= function(msg){ 
+    	log("Disconnected - status "+this.readyState); 
+    };
   }
   catch(ex){ log(ex); }
 }
