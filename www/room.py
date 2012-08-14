@@ -24,14 +24,35 @@ def askExit(request , room_seq):
 def modify_message(message):
     return message.lower()
 
+socket_list = [] # empty socket list
 def webSocket(request):
-	if request.environ.get('wsgi.websocket'):
-		ws = request.META['wsgi.websocket']
+	print socket_list
 
-		socks.append(ws)
+	if request.environ.get('wsgi.websocket'):
+
+		#get socket meta data
+		socket = request.META['wsgi.websocket']
+
+		#insert the socket into socket list
+		socket_list.append(socket)
+		for socket in socket_list:
+			print socket
+
+		request.session['socketID'] = `id(socket)`
+
+		print 'Websocket User Connection'
+		print 'USER : ' , request.session['userID']
+		print 'WS ID: ' , `id(socket)`
+
+		#listen socket's sending data
 		while True:
-			msg = ws.receive()
-			for sock in socks:
-				sock.send(msg+`id(ws)`)
+			msg = socket.receive()#receive data
+			print 'Websocket Message'
+			print 'USER : ' , request.session['userID']
+			print 'MSG  : ' , msg
+
+			for socket in socket_list:
+				print 'a'
+				socket.send(msg+`id(socket)`)
 	
 	return HttpResponse("false")

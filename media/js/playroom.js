@@ -115,8 +115,10 @@ function init(){
   var host = "ws://localhost:8000/WS/";
   try{
     socket = new WebSocket(host);
+    
     log('WebSocket - status '+socket.readyState);
-    socket.onopen	= function(msg){ 
+
+    socket.onopen = function(msg){ 
     	log("Welcome - status "+this.readyState);
     	sendLoginInfo(sid,userid);
     }
