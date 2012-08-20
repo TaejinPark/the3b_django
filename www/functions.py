@@ -20,6 +20,9 @@ def discardSession(request):
 def setSession(request,userID):
 	request.session['userID'] = userID
 
+def getSession(request):
+	return request.session['userID']
+	
 #manage login
 @csrf_exempt
 def checkLogin(request):
@@ -27,3 +30,8 @@ def checkLogin(request):
 		return HttpResponse('true')
 	else:
 		return HttpResponse('false')
+
+def unicodeToDict(data):
+	data = str(data)
+	data = ast.literal_eval(data)
+	return dict(data)

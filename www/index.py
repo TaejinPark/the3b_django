@@ -4,7 +4,7 @@ from django.shortcuts import render_to_response
 from django.http import Http404, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.views.decorators.csrf import csrf_exempt
-from db.models import *
+from www.models import *
 from www.functions import *
 import md5
 
@@ -15,26 +15,20 @@ def index(request):
 #/index/doLogin
 @csrf_exempt
 def doLogin(request):
-	print request.POST	
 	if request.is_ajax() and request.method == 'POST': #check request data
-		
 		m = Member.objects.filter(userID=request.POST['userID']) #get userID from request data
-
 		if m.count() == 0: #there is no exist userID
 			return HttpResponse('false')
-
-		elif m.password == md5.md5(request.POST['password']).hexdigest(): #compare password
+		m = Member.objects.get(userID=request.POST['userID'])
+		if m.password == md5.md5(request.POST['password']).hexdigest(): #compare password
 			setSession(request,m.userID)#make new session
 			return HttpResponse('true')
-		
-		else:
-			return HttpResponse('false')#mismatch password	
-	
 	else:
 		return HttpResponse('false')
 
 @csrf_exempt
 def doJoin(request):
+	print request.POST
 	if request.is_ajax() and request.method == 'POST':
 		# check validation
 		userID = request.POST['userID']

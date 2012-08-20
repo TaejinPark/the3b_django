@@ -120,8 +120,8 @@ function view_clear(){ // non-display to join, login form
 function doLogin(obj){
 	// call "doLogin" function of index.php file in controller directory
 	$.post("/doLogin/",
-	{userID:obj.find('input[name=id]').val(),password:obj.find('input[name=pw]').val()}
-	,function(data){
+		{userID:obj.find('input[name=id]').val(),password:obj.find('input[name=pw]').val()},
+		function(data){
 		if(data=="false") // login fail
 			alert("사용자 ID가 잘못되었거나, 비밀번호가 잘못되었습니다.");
 		else	// login success
@@ -326,9 +326,12 @@ function loadRoomList(start){
 						'<span>'+list[a].participant+'</span>/'+
 						'<span>'+list[a].maxuser+'</span>'+
 					'</div>'+
-						'<div>게임 종류 : '+
-							'<span>'+list[a].gametype+'</span>'+
-						'</div>'+
+					'<div>방 유형 : '+
+						'<span>'+list[a].roomtype+'</span>'+
+					'</div>'+
+					'<div>게임 종류 : '+
+						'<span>'+list[a].gametype_text+'</span>'+
+					'</div>'+
 					'<div>게임 옵션 : ';
 
 			switch(list[a].gametype){

@@ -4,7 +4,7 @@ from django.shortcuts import render_to_response
 from django.http import Http404, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.views.decorators.csrf import csrf_exempt
-from db.models import *
+from www.models import *
 from www.functions import *
 import json
 import md5
@@ -129,13 +129,11 @@ def doMakeRoom(request):
 	room.name		= request.POST['name']
 	room.maxuser	= request.POST['maxuser']
 	room.private	= request.POST['private']
-	room.participant= 1
 	room.roomtype	= request.POST['roomtype']
 	room.gametype	= request.POST['gametype']
-	room.owner		= Member.objects.get(userID = request.session['userID'])
+	room.owner		= request.session['userID']
 	room.start		= u'W'
 	room.gameoption	= request.POST['gameoption_'+room.gametype]
-
 	# if password is exist
 	if request.POST['password'] != '' : 
 		room.password	= md5.md5(request.POST['password']).hexdigest()
@@ -146,6 +144,11 @@ def doMakeRoom(request):
 	
 	#save room data to database
 	room.save()
+
+	MIR = MemberInRoom()
+	MIR.room_seq = room.seq
+	MIR.userID = room.owner
+	MIR.save()
 
 	return HttpResponse(room.seq)
 
@@ -194,10 +197,11 @@ def getRoomListToJson(request):
 			{'room_seq'		:room.seq,
 			'name'		: room.name,
 			'maxuser'	: room.maxuser,
-			'participant':room.participant,
-			'private'	: room.private,
-			'roomtype'	: room.roomtype,
+			'participant':room.getCurUserNumber(),
+			'private'	: room.get_private_display(),
+			'roomtype'	: room.get_roomtype_display(),
 			'gametype'	: room.gametype,
+			'gametype_text'	: room.get_gametype_display(),
 			'owner'		: room.owner,
 			'password'	: room.password,
 			'gameoption': room.gameoption,

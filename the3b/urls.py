@@ -41,7 +41,7 @@ urlpatterns = patterns('',
     url(r'^room/(?P<room_seq>\d+)/askplay\.html/$','www.room.askPlay'),
 
     #websocket
-    url(r'^WS/','www.room.webSocket'),
+    url(r'^WS/','www.ws.webSocket'),
 
     #functions url
     url(r'^checkLogin/','www.functions.checkLogin'),
