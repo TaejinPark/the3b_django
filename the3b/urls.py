@@ -20,28 +20,32 @@ urlpatterns = patterns('',
 
     #index url
     url(r'^$','www.index.index'),
-    url(r'^index/','www.index.index'),
-    url(r'^doLogin/','www.index.doLogin'),
-    url(r'^doJoin/','www.index.doJoin'),
-    url(r'^isExistID/','www.index.isExistID'),
-    url(r'^isExistNickname/','www.index.isExistNickname'),
+    url(r'^index/$','www.index.index'),
+    url(r'^doLogin/$','www.index.doLogin'),
+    url(r'^doJoin/$','www.index.doJoin'),
+    url(r'^isExistID/$','www.index.isExistID'),
+    url(r'^isExistNickname/$','www.index.isExistNickname'),
 
     #roomlist url
-    url(r'^doLogout/','www.roomlist.doLogout'),
-    url(r'^roomlist/','www.roomlist.index'),
-    url(r'^doMakeRoom/','www.roomlist.doMakeRoom'),
-    url(r'^getRoomListToJson/','www.roomlist.getRoomListToJson'),
-    url(r'^getUserInfo/','www.roomlist.getUserInfo'),
-    url(r'^doWithdraw/','www.roomlist.doWithdraw'),
-    url(r'^checkRoomPasswd/','www.roomlist.checkRoomPasswd'),
+    url(r'^doLogout/$','www.roomlist.doLogout'),
+    url(r'^roomlist/$','www.roomlist.index'),
+    url(r'^doMakeRoom/$','www.roomlist.doMakeRoom'),
+    url(r'^joinInRoom/$','www.roomlist.joinInRoom'),
+    url(r'^getRoomListToJson/$','www.roomlist.getRoomListToJson'),
+    url(r'^getUserInfo/$','www.roomlist.getUserInfo'),
+    url(r'^doWithdraw/$','www.roomlist.doWithdraw'),
+    url(r'^checkRoomPasswd/$','www.roomlist.checkRoomPasswd'),
     
+
     #room url
     url(r'^room/(?P<room_seq>\d+)/$','www.room.index'),
     url(r'^room/(?P<room_seq>\d+)/askexit\.html/$','www.room.askExit'),
     url(r'^room/(?P<room_seq>\d+)/askplay\.html/$','www.room.askPlay'),
 
+
     #websocket
-    url(r'^WS/','www.ws.webSocket'),
+    url(r'^WS/$','www.ws.webSocket'),
+    url(r'^disconnectRoom/$','www.ws.disconnectRoom'),
 
     #functions url
     url(r'^checkLogin/','www.functions.checkLogin'),

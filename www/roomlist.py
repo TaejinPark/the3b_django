@@ -144,14 +144,15 @@ def doMakeRoom(request):
 	
 	#save room data to database
 	room.save()
-
-	MIR = MemberInRoom()
-	MIR.room_seq = room.seq
-	MIR.userID = room.owner
-	MIR.save()
-
 	return HttpResponse(room.seq)
 
+@csrf_exempt
+def joinInRoom(request):
+	room_seq = int(request.POST['room_seq'])
+	if Room.objects.filter(seq = room_seq).count():
+		return HttpResponse(room_seq)
+	else:
+		return HttpResponse('false')
 
 @csrf_exempt
 def getRoomListToJson(request):
@@ -194,7 +195,7 @@ def getRoomListToJson(request):
 		rooms_json = '['
 		for room in roomlist[start:end] :
 			rooms_json += json.dumps( 
-			{'room_seq'		:room.seq,
+			{'room_seq'	:room.seq,
 			'name'		: room.name,
 			'maxuser'	: room.maxuser,
 			'participant':room.getCurUserNumber(),

@@ -9,6 +9,10 @@ from www.functions import *
 
 #/index/
 def index(request , room_seq):
+	#check session
+	if not checkSession(request):
+		return render_to_response('index.html')
+
 	if Room.objects.filter(seq = room_seq).count() == 0 :
 		return render_to_response('roomlist.html')
 	room = Room.objects.get(seq = room_seq)

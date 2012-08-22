@@ -1,3 +1,42 @@
+//django jquery ajax comunication
+$(document).ajaxSend(function(event, xhr, settings) {
+	function getCookie(name) {
+		var cookieValue = null;
+		if (document.cookie && document.cookie != '') {
+			var cookies = document.cookie.split(';');
+			for (var i = 0; i < cookies.length; i++) {
+				var cookie = jQuery.trim(cookies[i]);
+				// Does this cookie string begin with the name we want?
+				if (cookie.substring(0, name.length + 1) == (name + '=')) {
+					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+					break;
+				}
+			}
+		}
+		return cookieValue;
+	}
+	function sameOrigin(url) {
+		// url could be relative or scheme relative or absolute
+		var host = document.location.host; // host + port
+		var protocol = document.location.protocol;
+		var sr_origin = '//' + host;
+		var origin = protocol + sr_origin;
+		// Allow absolute or scheme relative URLs to same origin
+		return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+			(url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+			// or any other URL that isn't scheme relative or absolute i.e relative.
+			!(/^(\/\/|http:|https:).*/.test(url));
+	}
+	function safeMethod(method) {
+		return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+	}
+
+
+	if (!safeMethod(settings.type) && sameOrigin(settings.url)) {
+		xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+	}
+});
+
 $(window).resize(function() {
 	resizeContent();
 });
@@ -126,7 +165,7 @@ function init(){
     	log("Received: "+msg.data); 
     	process(msg.data); 
     }
-    socket.onclose	= function(msg){ 
+    socket.onclose	= function(msg){
     	log("Disconnected - status "+this.readyState); 
     };
   }
@@ -161,17 +200,17 @@ function process(msg){
 	} catch (ex){ log(ex); }
 	switch(data.cmd){
 		case "JOIN": 
-			chatAppend('['+data.data.Nickname+"] 님이 참가 하셨습니다."); 
-			userAppend(data.data.UserID,data.data.Nickname); break;
+			chatAppend('['+data.data.nickname+"] 님이 참가 하셨습니다."); 
+			userAppend(data.data.UserID,data.data.nickname); break;
 		
 		case "USERLIST": 
 			makeUserList(data.data); break;
 		
 		case "CHAT": 
-			chatAppend(data.data.Nickname+": "+data.data.Message);break;
+			chatAppend(data.data.nickname+": "+data.data.Message);break;
 		
 		case "KICK": 
-			chatAppend('['+data.data.Nickname+"] 님이 강퇴 당하셨습니다.");
+			chatAppend('['+data.data.nickname+"] 님이 강퇴 당하셨습니다.");
 			$('.user_'+data.data.UserID).remove(); break;
 		
 		case "CHANGE_SETTING": 
@@ -183,15 +222,15 @@ function process(msg){
 			break;
 		
 		case "CHANGE_OWNER": 
-			owner = data.data.UserID; chatAppend('['+data.data.Nickname+'] 님이 방장이 되셨습니다.');
+			owner = data.data.UserID; chatAppend('['+data.data.nickname+'] 님이 방장이 되셨습니다.');
 			sendCmd="USERLIST"; send("USERLIST",{});
 			break;
 		
 		case "READY": 
-			chatAppend('['+data.data.Nickname+"] 님이 준비가 완료되었습니다."); break;
+			chatAppend('['+data.data.nickname+"] 님이 준비가 완료되었습니다."); break;
 		
 		case "UNREADY": 
-			chatAppend('['+data.data.Nickname+"] 님이 준비를 취소 하였습니다."); break;
+			chatAppend('['+data.data.nickname+"] 님이 준비를 취소 하였습니다."); break;
 		
 		case "START": 
 			chatAppend("게임이 곧 시작됩니다. 준비하세요!"); 
@@ -199,11 +238,11 @@ function process(msg){
 			break;
 		
 		case "QUIT": 
-			if(nickname==data.data.Nickname) location.href="/roomlist/";
+			if(nickname==data.data.nickname) location.href="/roomlist/";
 			
-			//chatAppend($('.user_'+data.data.Nickname+' span').text()+"님이 방에서 나갔습니다.");
-			chatAppend('['+data.data.Nickname+"] 님이 방에서 나갔습니다.");
-			$('.nick_'+data.data.Nickname).parent().remove(); break;
+			//chatAppend($('.user_'+data.data.nickname+' span').text()+"님이 방에서 나갔습니다.");
+			chatAppend('['+data.data.nickname+"] 님이 방에서 나갔습니다.");
+			$('.nick_'+data.data.nickname).parent().remove(); break;
 		
 		case "BINGO_START": 
 			$("#remaintime").css('display','none').next().css('display','none'); $("#turn").css('display','block');
@@ -220,12 +259,12 @@ function process(msg){
 			bingoUser = []; bingoEndUser = []; markSelect(data.data); break;
 		
 		case "BINGO_BINGO": 
-			bingoUser.push(data.data.Nickname);
+			bingoUser.push(data.data.nickname);
 			message(bingoUser.join(", ")+"님이 한줄 이상을 완성 했습니다!"+(bingoEndUser.length>0?"<br />"+bingoEndUser.join(", ")+"님이 빙고를 완성 했습니다!":""));
 			break;
 		
 		case "BINGO_LAST": 
-			bingoUser.push(data.data.Nickname);
+			bingoUser.push(data.data.nickname);
 			message((bingoUser.length>0?bingoUser.join(", ")+"님이 빙고 한줄을 완성 했습니다!":"")+bingoEndUser.join(", ")+"님이 빙고를 완성 했습니다!");
 			break;
 		
@@ -298,6 +337,7 @@ function sendLoginInfo(sessionid,userid){
 	var data = {};
 	data.Sessionid = sessionid;
 	data.UserID = userid;
+	data.room_seq = room_seq
 	send("LOGIN",data);
 }
 
@@ -373,246 +413,6 @@ function initJoin(){
 		send("CHANGE_SETTING",data);
 		$("#fold a").click();
 	});
-}
-
-function startBingo(){
-	play = true;
-	viewPlay();
-	$("#bingoTable a").click(insertBingo);
-	$("#currentSelect").change(function(){
-		currentNumber = $(this).val();
-		if(!selectActivate) {
-			viewUnselect();
-			selectActivate = true;
-		}
-	});
-	$("#inputEnd").click(function(){
-		var flag = false;
-		$("#bingoTable a").each(function(){
-			if($(this).text()=="x") flag = true;
-		});
-		if(flag==true){
-			if(confirm("아직 작성하지 않은 빙고가 있습니다.\n입력을 완료 하시겠습니까?")){
-				forceInsert();
-			} else {
-				return;
-			}
-		}
-		sendCmd = "BINGO_WRITED";
-		send("BINGO_WRITED",{});
-		interval = setInterval(forceStart,(50-currentSelectTime)*1000);
-		currentSelectTime = 49;
-		$("#inputEnd").parent().css('display','none');
-	});
-	$("#okSelect a").click(currentSelectEnd);
-
-	//init
-	bingoLine = $("#bingo_option_line input").val();
-	currentBingo = 0;
-	bingoUser = [];
-	bingoEndUser = [];
-	currentSelectTime = 0;
-	selectActivate = false;
-	bingoSelect = [];
-	currentNumber = 1;
-	interval = null;
-
-	setTimeout(selectEnd,1000);
-}
-
-function insertBingo(){
-	if(currentSelectTime==50) return;
-	//font-size 13px;
-	if($(this).children("span").children("span").text() == "x"){
-		$(this).children("span").children("span").text(currentNumber++);
-		$(this).attr('data-theme','c');
-		if(currentNumber<26) $("#currentSelect").val(currentNumber);
-		if(selectActivate || currentNumber==26) viewUnselect();
-	} else {
-		var arr = {};
-		var idx = 1;
-		var obj = $("#bingoTable a");
-		obj.each(function(){
-			if($(this).text()=="x") return;
-			if(typeof arr[$(this).text()] == "undefined") {
-				arr[$(this).text()] = [];
-				arr[$(this).text()].push(idx++);
-			} else {
-				arr[$(this).text()].push(idx++);
-				for(var a=0,loopa=arr[$(this).text()].length; a<loopa; a++){
-					obj.eq(arr[$(this).text()][a]).attr('data-theme','e');
-				}
-			}
-		});
-	}
-	$("#bingoTable a").trigger("create");
-	$("#bingoTable a").css('font-size','13px');
-	$(this).css('font-size',"15px");
-}
-
-function viewUnselect(){
-	var unselectList = [];
-	for(var a=1; a<=25; a++){
-		var flag = false;
-		for(var b=0, loopb= bingoSelect.length; b<loopb; b++){
-			if(a==bingoSelect[b]) {
-				flag = true;
-				break;
-			}
-		}
-		if(!flag) unselectList.push(a);
-	}
-	$("#bingoUnselect").text(unselectList.join(", "));
-}
-
-function selectEnd(){
-	$("#remaintime span").text(50 - ++currentSelectTime);
-	if(currentSelectTime<50) setTimeout(selectEnd,1000);
-	else {
-		forceInsert();
-		if(interval==null)
-			forceStart();
-		else
-			clearInterval(interval);
-	}
-}
-
-function forceInsert(){
-	var currentList = [];
-	var idxList = [];
-	var obj = $("#bingoTable a");
-	obj.each(function(){
-		currentList.push($(this).text());
-	});
-	var notInsertList = [];
-	for(var a=1; a<=25; a++){
-		var flag = false;
-		for(var b=0,loopb=currentList.length; b<loopb; b++){
-			if(currentList[b]==a) { flag = true; break; }
-		}
-		if(flag) continue;
-		notInsertList.push(a);
-	}
-	obj.each(function(){
-		if($(this).text()!="x") return;
-		while(true){
-			var idx = parseInt(Math.random()*(parseInt(currentList.length/10)+1)*10);
-			var flag = false;
-			for(var a=0,loopa=idxList.length; a<loopa; a++){
-				if(idxList[a]==idx) { flag = true; break; }
-			}
-			if(flag) continue;
-			if(notInsertList.length<idx) continue;
-			if(!notInsertList[idx]) continue;
-			idxList.push(idx);
-			$(this).children('span').text(notInsertList[idx]);
-			break;
-		}
-	}).attr('data-theme','c').trigger("create");
-}
-
-function forceStart(){
-	if(owner != userid) return;
-	sendCmd = "BINGO_START";
-	send("BINGO_START",{});
-	if(interval!=null)
-		clearInterval(interval);
-}
-
-function bingo(){
-	if(currentNickname!=nickname) return;
-	if($(this).attr('data-theme')!='c') return;
-	$("#bingoTable a[data-theme=e]").attr('data-theme','c');
-	$(this).attr('data-theme','e');
-	$("#bingoTable").trigger("create");
-	$("#bingoTable a").css('font-size','13px');
-	$(this).css('font-size',"15px");
-}
-
-function currentSelectEnd(){
-	currentSelectTime2 = 14;
-}
-
-function sendSelectNumber(){
-	var obj = $("#bingoTable");
-	if(obj.find('a[data-theme=e]').size()==0){
-		var max = obj.find('a[data-theme=c]').size();
-		while(true){
-			var idx = parseInt(Math.random()*(parseInt(max/10)+1)*10);
-			if(max<idx) continue;
-			obj.find('a[data-theme=c]').eq(idx).attr('data-theme','e');
-			break;
-		}
-	}
-	$("#bingoTable").trigger("create");
-	var currentNumber = obj.find('a[data-theme=e]').text();
-	var data = {};
-	$("#remaintime").css('display','none');
-	$("#okSelect").css('display','none');
-	data.SelectedNumber = currentNumber;
-	send("BINGO_SELECT",data);
-}
-
-function showMyTurn(){
-	$("#okSelect").css('display','block');
-	currentSelectTime2 = 0;
-	$("#remaintime").css('display','block');
-	$("#remaintime span").text(15);
-	interval2 = setInterval(showTurnRemainTime,1000);
-}
-
-function showTurnRemainTime(){
-	$("#remaintime span").text(15 - ++currentSelectTime2);
-	if(currentSelectTime2>=15) {
-		clearInterval(interval2);
-		sendSelectNumber();
-	}
-}
-
-function markSelect(data){
-	if(currentBingo>=bingoLine) return;
-	var obj = $("#bingoTable a");
-	obj.each(function(idx){
-		if(parseInt($(this).text())==data.SelectedNumber){
-			$(this).buttonMarkup({ theme: "a" });
-			var curidx = idx + 1;
-			var col = curidx % 5;
-			var row = parseInt(curidx / 5);
-			var addBingo = 0;
-			//row check
-			if(obj.slice(row*5-1,row*5+4).filter("[data-theme=a]").size()==5) addBingo++;
-			//col check
-			var tmp = 0;
-			for(var a=0; a<5; a++)
-				if(obj.eq(col-1+a*5).attr("data-theme")=="a")
-					tmp++;
-			if(tmp==5) addBingo++;
-			//cross check
-			if(col == row){
-				tmp = 0;
-				for(var a=0; a<5; a++)
-					if(obj.eq(a+a*5).attr("data-theme")=="a")
-						tmp++;
-				if(tmp==5) addBingo++;
-			}
-			if(5-col == row){
-				tmp = 0;
-				for(var a=0; a<5; a++)
-					if(obj.eq(4-a+a*5).attr("data-theme")=="a")
-						tmp++;
-				if(tmp==5) addBingo++;
-			}
-			if(addBingo>0){
-				sendCmd = "BINGO_BINGO";
-				send("BINGO_BINGO",{Bingo:addBingo});
-			}
-			currentBingo += addBingo;
-			if(currentBingo>=bingoLine){
-				$("#bingoTable a").unbind("click");
-			}
-		}
-	});
-	$("#bingoTable").trigger("create");
 }
 
 function showResult(list){

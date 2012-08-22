@@ -255,7 +255,7 @@ function makeRoom(obj){
 		switch(data){//data is room number]
 			case '-1': 	alert("방 이름을 입력해 주세요.");obj.find('input[name=name]').focus();break;
 			case '0':	alert('방 정보가 잘못 되었습니다.');	break;
-			//default:	location.href="/game/index/"+data+'/';
+			default:	location.href="/room/"+data+'/';
 		}
 	});
 }
@@ -382,7 +382,18 @@ function loadRoomList(start){
 						alert("비밀번호가 일치하지 않습니다."); // not match
 				});
 			}
-			else location.href="/room/"+parseInt($(this).parent().parent().parent().parent().find('.roomnumber').text())+'/'; // go game room
+			else{
+				room_seq = parseInt($(this).parent().parent().parent().parent().find('.roomnumber').text());
+				$.post('/joinInRoom/',
+					{room_seq:room_seq},
+					function(data){
+						if(data)
+							location.href="/room/"+data+'/'; // go game room
+						else
+							alert('방이 존재하지 않습니다.')
+					}
+				);
+			}
 		});
 	});
 }
