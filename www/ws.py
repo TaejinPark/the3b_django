@@ -54,7 +54,12 @@ def proc_userlist(user , data , request):
 
 
 def proc_chat(user , data , request):
-	print 'CHAT : ' , user , data , ret
+	print 'CHAT : ' , user , data
+	conn_user = Member.objects.get(userID = user)
+	data = {'nickname':conn_user.nickname,'Message':data}
+	msg = {'cmd':'CHAT','data':data}
+	msg = json.dumps(msg)
+	sendToAll(user , msg)
 	return ret
 
 
