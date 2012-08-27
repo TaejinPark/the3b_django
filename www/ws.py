@@ -8,6 +8,7 @@ from www.models import *
 from www.functions import *
 import gevent
 import ast
+import pdb
 
 socket_list = [] # empty socket list
 
@@ -41,8 +42,13 @@ def proc_join(user , data , request):
 
 
 def proc_userlist(user , data , request):
+	print 'USERLIST'
 	room_seq = MemberInRoom.objects.get(userID = user).room_seq
-	
+	memlist = MemberInRoom.objects.filter(room_seq = room_seq)
+	members = []
+	for a in memlist:
+		members.append(Member.objects.get(userID = a.userID).userID)
+	print members
 	print 'USERLIST : ' , user , data , ret
 	return ret
 
@@ -73,24 +79,10 @@ def proc_kick(user , data , request):
 
 
 def proc_quit(user , data , request):
-	print 'QUIT : ' , user , data , ret
-	return ret
-
-@csrf_exempt
-def disconnectRoom(request):
-	print 'disconnectRoom'
-	
-	conn_user = MemberInRoom.objects.get(userID = request.session['userID'])
-	sockID = conn_user.sockID
-	conn_user.sockID = 0 ;
-	conn_user.save()
-
-	for a in range(len(socket_list)):
-		print sockID , `id(socket_list[a])`
-		if sockID == `id(socket_list[a])`:
-			socket_list.pop(a)
-
-	return HttpResponse('')
+	print 'QUIT : ' , user , data
+	conn_user = MemberInRoom.objects.get(userID = user)
+	conn_user.delete()
+	return
 
 def proc_change_setting  (user , msg , request):
 	print 'CHANGESETTING : ' , user , msg
@@ -109,17 +101,15 @@ process = {
 	'CHANGE_SETTING' 	: proc_change_setting  
 }
 #import pdb;pdb.set_trace();
-def webSocket(request):
+def webSocket(request,room_seq):
 	if request.environ.get('wsgi.websocket'):
-
 		#print socket list and check disconnected socket
 		for index in range(len(socket_list)):
 			try:
 				socket_list[index].send(json.dumps({'cmd':'OK','data':''}))
 			except:
-				print 'Pop - ' , 
-				print MemberInRoom.objects.get(sockID = `id(socket_list[index])`).userID ,
 				socket_list.pop(index)
+		print 'Socket List Check: Done'
 
 		#check session (check user's login)
 		print 'Check Session' ,
@@ -127,38 +117,30 @@ def webSocket(request):
 			return HttpResponse("false")
 		print ': Done'
 		
-		print 'Get Socket' , 
 		#get socket meta data
 		socket = request.META['wsgi.websocket']
-		print ': Done'
+		print 'Get Socket : Done'
 
-		print 'Set Data' ,
+		
 		#insert the socket into socket list
 		request.session['sockID'] = `id(socket)`
-		conn_user = MemberInRoom.objects.get(userID = request.session['userID'])
+		conn_user = MemberInRoom()
+		conn_user.userID = request.session['userID']
+		conn_user.room_seq = room_seq
 		conn_user.sockID = `id(socket)`
 		conn_user.save()
-		print ': Done'
-
-		print 'Add Socket to Socket List' ,		
+		print 'Set Data : Done' ,
+		
 		socket_list.append(socket)
-		print ': Done'
-
-
-
-		print 'Socket List Check: Done'
+		print 'Add Socket to Socket List : Done'
 		
 		print '--Socket ID list--'
 		for index in range(len(socket_list)):
-				print MemberInRoom.objects.get(sockID = `id(socket_list[index])`).userID ,
+				print index , MemberInRoom.objects.get(sockID = `id(socket_list[index])`).userID ,
 				print `id(socket_list[index])`
-		print '------------------'
 
-		print '---Websocket Connection---'
-		print 'USER : ' , request.session['userID']
-		print 'WS ID: ' , `id(socket)`
-		print '--------------------------'
-
+		print 'Connect : ' , request.session['userID'] , `id(socket)`
+		
 		#listen socket's sending data
 		while True:
 			msg = socket.receive()#receive data
@@ -170,18 +152,14 @@ def webSocket(request):
 
 			#message
 			print 'Recv : ' , userID , msg
-
+		
 			#excute command
 			try:
 				cmd = process[command](userID , data , request)
 			except :
 				continue
 			
-			try:
-				if cmd:
-					socket.send(cmd)
-			except:
-				pass
+			socket.send(cmd)
 	
 	return HttpResponse("false")
 

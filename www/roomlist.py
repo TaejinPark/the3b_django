@@ -134,6 +134,7 @@ def doMakeRoom(request):
 	room.owner		= request.session['userID']
 	room.start		= u'W'
 	room.gameoption	= request.POST['gameoption_'+room.gametype]
+	
 	# if password is exist
 	if request.POST['password'] != '' : 
 		room.password	= md5.md5(request.POST['password']).hexdigest()

@@ -15,9 +15,12 @@ def index(request , room_seq):
 
 	if Room.objects.filter(seq = room_seq).count() == 0 :
 		return render_to_response('roomlist.html')
+
 	room = Room.objects.get(seq = room_seq)
 	user = Member.objects.get(userID = request.session['userID'])
 	
+	
+
 	info = {
 		'name'		: room.name , 
 		'room_seq'	: room_seq , 

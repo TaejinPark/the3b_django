@@ -151,7 +151,7 @@ var interval2 = null;
 var currentNickname = '';
 
 function init(){
-  var host = "ws://localhost:8000/WS/";
+  var host = "ws://localhost:8000/WS/"+room_seq+"/";
   try{
     socket = new WebSocket(host);
     

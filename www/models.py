@@ -33,6 +33,10 @@ class Member(models.Model):# member db table
 		}
 		return serialized_data ;
 
+	def __unicode__(self):
+		data = '\n' + str(self.serialize()) + '\n'
+		return data
+
 class Result(models.Model):#Result of game db table	
 	OUTCOME=(	(u'W',u'승리'),
 				(u'L',u'패배'))
@@ -50,7 +54,11 @@ class Result(models.Model):#Result of game db table
 			'result' 	: self.result ,
 			'time' 		: self.time
 		}
+		return serialized_data ;
 
+	def __unicode__(self):
+		data = '\n' + str(self.serialize()) + '\n'
+		return data
 
 class MemberInRoom(models.Model):
 	READY_FLAG=((u'R',u'준비'),
@@ -62,7 +70,7 @@ class MemberInRoom(models.Model):
 	ready		= models.CharField(max_length=1,choices=READY_FLAG,default=u'W')
 	anonymous	= models.PositiveSmallIntegerField(max_length=1,default=0)
 	
-	def entries(self):
+	def serialize(self):
 		serialized_data = {
 			'type' 		: type(self) ,
 			'room_seq'	: self.room_seq ,
@@ -70,6 +78,11 @@ class MemberInRoom(models.Model):
 			'ready' 	: self.ready ,
 			'anonymous' : self.anonymous
 		}
+		return serialized_data ;
+	
+	def __unicode__(self):
+		data = '\n' + str(self.serialize()) + '\n'
+		return data
 
 
 class Room(models.Model):#Game room information db table
@@ -113,12 +126,15 @@ class Room(models.Model):#Game room information db table
 			'private'	: self.private ,
 			'roomtype'	: self.roomtype ,
 			'gametype'	: self.gametype ,
-			'owner'		: self.owner.userID ,
+			'owner'		: self.owner ,
 			'start'		: self.start ,
 			'password'	: self.password , 
 			'gameoption': self.gameoption }
 		return serialized_data ;
 
+	def __unicode__(self):
+		data = '\n' + str(self.serialize()) + '\n'
+		return data
 
 
 

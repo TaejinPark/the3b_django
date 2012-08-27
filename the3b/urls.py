@@ -44,8 +44,8 @@ urlpatterns = patterns('',
 
 
     #websocket
-    url(r'^WS/$','www.ws.webSocket'),
-    url(r'^disconnectRoom/$','www.ws.disconnectRoom'),
+    url(r'^WS/(?P<room_seq>\d+)/$','www.ws.webSocket'),
+    
 
     #functions url
     url(r'^checkLogin/','www.functions.checkLogin'),
