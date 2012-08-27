@@ -200,7 +200,7 @@ function process(msg){
 	} catch (ex){ log(ex); }
 	switch(data.cmd){
 		case "JOIN": 
-			chatAppend('['+data.data.nickname+"] 님이 참가 하셨습니다."); 
+			chatAppend('['+data['data']['nickname']+"] 님이 참가 하셨습니다."); 
 			userAppend(data.data.UserID,data.data.nickname); break;
 		
 		case "USERLIST": 
@@ -239,8 +239,6 @@ function process(msg){
 		
 		case "QUIT": 
 			if(nickname==data.data.nickname) location.href="/roomlist/";
-			
-			//chatAppend($('.user_'+data.data.nickname+' span').text()+"님이 방에서 나갔습니다.");
 			chatAppend('['+data.data.nickname+"] 님이 방에서 나갔습니다.");
 			$('.nick_'+data.data.nickname).parent().remove(); break;
 		
@@ -357,7 +355,7 @@ function sendUserList(){
 function makeUserList(list){
 	$("#participant_list").html("");
 	for(var a=0; a<list.length; a++){
-		userAppend(list[a].UserID,list[a].Nickname);
+		userAppend(list[a].userID,list[a].nickname);
 	}
 	$("#joinUsers").text(list.length);
 }

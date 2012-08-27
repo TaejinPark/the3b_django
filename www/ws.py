@@ -13,31 +13,42 @@ import pdb
 socket_list = [] # empty socket list
 
 def sendToAll(user,msg):
+	room_seq = MemberInRoom.objects.get(userID = user).room_seq
+	members = MemberInRoom.objects.filter(room_seq = room_seq)
 	for socket in socket_list:
-		socket.send(msg)
-	print 'SendToALL : ' , msg
+		sockID = int(`id(socket)`)
+		for member in members:
+			if int(member.sockID) == sockID:
+				socket.send(msg)
+	
+	print 'SendToALL : ' , msg #status message
 
 def proc_login(user , data , request):
-	
+	#make return message
 	ret = {'cmd':'OK','data':''}
 	ret = json.dumps(ret)
-	print 'LOGIN : ' , user , data , ret
+
+	print 'LOGIN : ' , user , data , ret #status message
 	return ret
 
 def proc_join(user , data , request):
 	
+	#get data if join user
 	member = Member.objects.get(userID = user)
 	
+	#set data to send message
 	data = {'userID'	: member.userID ,
 			'nickname'	: member.nickname }
 	msg = {'cmd':'JOIN','data':data}
 	msg = json.dumps(msg)
 
+	#set data to print message
 	ret = {'cmd':'OK','data':''}
 	ret = json.dumps(ret)
 	
 	sendToAll(user , msg)
-	print 'JOIN : ' , user , data , ret
+
+	print 'JOIN : ' , user , data , ret #status message
 	return ret
 
 
@@ -46,17 +57,24 @@ def proc_userlist(user , data , request):
 	room_seq = MemberInRoom.objects.get(userID = user).room_seq
 	memlist = MemberInRoom.objects.filter(room_seq = room_seq)
 	members = []
-	for a in memlist:
-		members.append(Member.objects.get(userID = a.userID).userID)
-	print members
-	print 'USERLIST : ' , user , data , ret
+	for member in memlist:
+		member = Member.objects.get(userID = member.userID)
+		data = {'userID' : member.userID , 'nickname' : member.nickname }
+		members.append(data)
+
+	msg = {'cmd':'USERLIST','data':members}
+	msg = json.dumps(msg)
+
+	sendToAll(user , msg)
+
+	print 'USERLIST : ' , user , data , ret #status message
 	return ret
 
 
 def proc_chat(user , data , request):
-	print 'CHAT : ' , user , data
+	print 'CHAT : ' , user , data  #status message
 	conn_user = Member.objects.get(userID = user)
-	data = {'nickname':conn_user.nickname,'Message':data}
+	data = {'nickname':conn_user.nickname,'Message':data['Message']}
 	msg = {'cmd':'CHAT','data':data}
 	msg = json.dumps(msg)
 	sendToAll(user , msg)
@@ -64,40 +82,40 @@ def proc_chat(user , data , request):
 
 
 def proc_ready(user , data , request):
-	print 'READY : ' , user , data , ret
+	print 'READY : ' , user , data , ret #status message
 	return ret
 
 
 def proc_unready(user , data , request):
-	print 'UNREADY : ' , user , data , ret
+	print 'UNREADY : ' , user , data , ret #status message
 	return ret
 
 
 def proc_start(user , data , request):
-	print 'START : ' , user , data , ret
+	print 'START : ' , user , data , ret #status message
 	return ret
 
 
 def proc_kick(user , data , request):
-	print 'KICK : ' , user , data , ret
+	print 'KICK : ' , user , data , ret #status message
 	return ret
 
-
+#to do
 def proc_quit(user , data , request):
-	print 'QUIT : ' , user
-	conn_user = MemberInRoom.objects.get(userID = user)
-	conn_user.delete()
 	conn_user = Member.objects.get(userID = user)
 	data = {'nickname':conn_user.nickname}
 	msg = {'cmd':'QUIT','data':data}
 	msg = json.dumps(msg)
 	sendToAll(user , msg)
+	conn_user = MemberInRoom.objects.get(userID = user)
+	conn_user.delete()
+	print 'QUIT : ' , user , msg #status message
 	return
 
-def proc_change_setting  (user , msg , request):
-	print 'CHANGESETTING : ' , user , msg
-	print msg
-	return msg
+def proc_change_setting  (user , data , request):
+	print 'CHANGESETTING : ' , user , msg #status message
+	print data
+	return data
 process = {
 	'LOGIN' 			: proc_login ,
 	'JOIN' 				: proc_join ,
@@ -133,9 +151,14 @@ def webSocket(request,room_seq):
 
 		
 		#insert the socket into socket list
+		userID = request.session['userID']
+		if MemberInRoom.objects.filter(userID = userID).count():
+			conn_user = MemberInRoom.objects.get(userID = userID)
+		else:
+			conn_user = MemberInRoom()
+
 		request.session['sockID'] = `id(socket)`
-		conn_user = MemberInRoom()
-		conn_user.userID = request.session['userID']
+		conn_user.userID = userID
 		conn_user.room_seq = room_seq
 		conn_user.sockID = `id(socket)`
 		conn_user.save()
