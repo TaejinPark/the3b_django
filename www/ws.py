@@ -79,9 +79,14 @@ def proc_kick(user , data , request):
 
 
 def proc_quit(user , data , request):
-	print 'QUIT : ' , user , data
+	print 'QUIT : ' , user
 	conn_user = MemberInRoom.objects.get(userID = user)
 	conn_user.delete()
+	conn_user = Member.objects.get(userID = user)
+	data = {'nickname':conn_user.nickname}
+	msg = {'cmd':'QUIT','data':data}
+	msg = json.dumps(msg)
+	sendToAll(user , msg)
 	return
 
 def proc_change_setting  (user , msg , request):
