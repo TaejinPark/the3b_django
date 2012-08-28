@@ -106,20 +106,20 @@ function viewPlay(){
 }
 
 function viewChat(){
-	if($("#chat").css('display')=='block' && play) return viewPlay();
+	if($("#chat").css('display')=='block' && play) 
+		return viewPlay();
 	$("#participant_list").css('display','none');
-	if(play) {
+	if(play)
 		$("#gamedisplay").css('display','none');
-	}
 	$("#chat").css('display','block');
 }
 
 function viewParticipant(){
-	if($("#participant_list").css('display')=='block') return viewChat();
+	if($("#participant_list").css('display')=='block') 
+		return viewChat();
 	$("#chat").css('display','none');
-	if(play) {
+	if(play)
 		$("#gamedisplay").css('display','none');
-	}
 	$("#participant_list").css('display','block');
 }
 

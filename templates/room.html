@@ -37,7 +37,7 @@
 				$("#chat").css('display','block');
 			});		
 			window.onbeforeunload=function(){
-				$("#exit_button a").click();
+				$("#exit_button a").click(goExit());
 			};
 		</script>
 	</head>
@@ -266,9 +266,7 @@
 			<div>
 				<div id="chat_list_button"><a type="button" onclick="viewChat();">채팅창</a></div>
 				<div id="participant_button"><a type="button" onclick="viewParticipant();">참가자</a></div>
-				<div id="exit_button">
-					<a href="askexit.html" data-rel="dialog" type="button">종료</a>
-				</div>
+				<a id="exit_button" href="askexit.html" data-rel="dialog" type="button">종료</a>
 				<div id="play_button">
 					<a href="askplay.html" data-rel="dialog" type="button" id="start_button">시작</a>
 					<a type="button" id="ready_button">준비</a>
