@@ -193,6 +193,13 @@ function trim(str) { return str.replace(/^\s\s*/, '').replace(/\s\s*$/, ''); }
 String.prototype.trim = function() { return this.replace(/^\s\s*/, '').replace(/\s\s*$/, ''); }
 
 function process(msg){
+	if(userid != owner)
+		$("#start_button").css('display','none');
+	else{
+		$("#ready_button").css('display','none');
+		$("#unready_button").css('display','none');
+	}
+
 	if(msg.substr(0,1)!="{") msg = msg.substr(1);
 	if(msg.substr(msg.length-1,1)!="}") msg = msg.substr(0,msg.length-1);
 	try{ 
@@ -201,8 +208,8 @@ function process(msg){
 	switch(data.cmd){
 		case "JOIN": 
 			chatAppend('['+data['data']['nickname']+"] 님이 참가 하셨습니다."); 
-			userAppend(data.data.UserID,data.data.nickname); break;
-		
+			userAppend(data.data.userID,data.data.nickname); break;
+			
 		case "USERLIST": 
 			makeUserList(data.data); break;
 		
@@ -211,7 +218,7 @@ function process(msg){
 		
 		case "KICK": 
 			chatAppend('['+data.data.nickname+"] 님이 강퇴 당하셨습니다.");
-			$('.user_'+data.data.UserID).remove(); break;
+			$('.user_'+data.data.userID).remove(); break;
 		
 		case "CHANGE_SETTING": 
 			chatAppend("방 설정이 다음과 같이 변경되었습니다.");
@@ -222,7 +229,7 @@ function process(msg){
 			break;
 		
 		case "CHANGE_OWNER": 
-			owner = data.data.UserID; chatAppend('['+data.data.nickname+'] 님이 방장이 되셨습니다.');
+			owner = data.data.userID; chatAppend('['+data.data.nickname+'] 님이 방장이 되셨습니다.');
 			sendCmd="USERLIST"; send("USERLIST",{});
 			break;
 		
@@ -282,11 +289,11 @@ function process(msg){
 					sendUserList(); break;
 				
 				case "READY": 	$("#ready_button").css('display','none'); 
-								$("#already_button").css('display','block'); 
+								$("#unready_button").css('display','block'); 
 								break;
 								
 				case "UNREADY": $("#ready_button").css('display','block'); 
-								$("#already_button").css('display','none'); 
+								$("#unready_button").css('display','none'); 
 								break;
 			}
 			break;
@@ -304,24 +311,6 @@ function message(msg){
 	$("#messageWindow").html(msg);
 }
 
-function userAppend(a_userid,a_nickname){
-	var str = '<div class="user_'+a_userid+'">'+
-			'<a class="nick_'+a_nickname+'" type="button" data-inline="true">'+(owner==a_userid?'방장':'강퇴')+'</a>'+
-			'<span>'+a_nickname+'</span>'+
-			'</div>';
-	$("#participant_list").append(str).parent().trigger("create");
-	$('#participant_list div a').unbind('click').click(function(){
-		if($(this).text()=="방장") return;
-		if(owner!=userid) return;
-		var kickuser = $(this).parent().attr('class').replace("user_","");
-		if(kickuser == userid) { alert("자기 자신은 강퇴 안되요 ^^"); return; }
-		sendCmd = "KICK";
-		var data = {};
-		data.UserID = kickuser;
-		send("KICK",data);
-	});
-}
-
 function send(command,data){
 	data = {cmd:command,data:data};
 	try{
@@ -334,7 +323,7 @@ function sendLoginInfo(sessionid,userid){
 	sendCmd = "LOGIN";
 	var data = {};
 	data.Sessionid = sessionid;
-	data.UserID = userid;
+	data.userID = userid;
 	data.room_seq = room_seq
 	send("LOGIN",data);
 }
@@ -352,6 +341,34 @@ function sendUserList(){
 	send("USERLIST",data);
 }
 
+function userAppend(a_userid,a_nickname){
+	var str = '<div class="user_'+a_userid+'">'+
+			'<a class="nick_'+a_nickname+'" type="button" data-inline="true">'+(owner==a_userid?'방장':'강퇴')+'</a>'+
+			'<span>'+a_nickname+'</span>'+
+			'</div>';
+	$("#participant_list").append(str).parent().trigger("create");
+	$('#participant_list div a').unbind('click').click(function(){
+		
+		//can't kick the room owner
+		if($(this).text()=="방장") 
+			return;
+
+		//only user can kick the other user
+		if(owner!=userid)
+			return;
+
+		var kickuser = $(this).parent().attr('class').replace("user_","");
+		if(kickuser == userid) { 
+			alert("자기 자신은 강퇴 안되요 ^^"); 
+			return; 
+		}
+
+		sendCmd = "KICK";
+		var data = {};
+		data.userID = kickuser;
+		send("KICK",data);
+	});
+}
 function makeUserList(list){
 	$("#participant_list").html("");
 	for(var a=0; a<list.length; a++){

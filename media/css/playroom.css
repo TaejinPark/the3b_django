@@ -54,7 +54,7 @@ body {overflow-y: hidden;}
 #participant_button		{float:left;}
 #chat_list_button		{float:left;}
 
-#already_button			{display: none;}
+#unready_button			{display: none;}
 
 #gamedisplay			{display:none;}
 

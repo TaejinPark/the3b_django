@@ -53,40 +53,78 @@ def proc_join(user , data , request):
 
 
 def proc_userlist(user , data , request):
-	print 'USERLIST'
+	#get room sequence number
 	room_seq = MemberInRoom.objects.get(userID = user).room_seq
+	
+	#get member list in room
 	memlist = MemberInRoom.objects.filter(room_seq = room_seq)
+	
+	#get member name in member list
 	members = []
 	for member in memlist:
 		member = Member.objects.get(userID = member.userID)
 		data = {'userID' : member.userID , 'nickname' : member.nickname }
 		members.append(data)
 
-	msg = {'cmd':'USERLIST','data':members}
-	msg = json.dumps(msg)
-
-	sendToAll(user , msg)
+	#make json and send user list
+	ret = {'cmd':'USERLIST','data':members}
+	ret = json.dumps(ret)
 
 	print 'USERLIST : ' , user , data , ret #status message
 	return ret
 
 
 def proc_chat(user , data , request):
-	print 'CHAT : ' , user , data  #status message
+	#send chat message wirh user nickname
 	conn_user = Member.objects.get(userID = user)
 	data = {'nickname':conn_user.nickname,'Message':data['Message']}
 	msg = {'cmd':'CHAT','data':data}
 	msg = json.dumps(msg)
 	sendToAll(user , msg)
-	return ret
+
+	print 'CHAT : ' , user , data  #status message
+	return
 
 
 def proc_ready(user , data , request):
+	
+	#set ready flag to user in MemberInRoom
+	conn_user = MemberInRoom.objects.get(userID = user)
+	conn_user.ready=u'R'
+	conn_user.save()
+	conn_user = Member.objects.get(userID = user)
+
+	#make to send data and send message to all user in same room
+	data = {'nickname':conn_user.nickname}
+	msg = {'cmd':'READY','data':data}
+	msg = json.dumps(msg)
+	sendToAll(user , msg)
+	
+	#make return message about ready command
+	ret = {'cmd':'OK','data':''}
+	ret = json.dumps(ret)
+
 	print 'READY : ' , user , data , ret #status message
 	return ret
 
 
 def proc_unready(user , data , request):
+	#set ready flag to user in MemberInRoom
+	conn_user = MemberInRoom.objects.get(userID = user)
+	conn_user.ready=u'W'
+	conn_user.save()
+	conn_user = Member.objects.get(userID = user)
+
+	#make to send data and send message to all user in same room
+	data = {'nickname':conn_user.nickname}
+	msg = {'cmd':'UNREADY','data':data}
+	msg = json.dumps(msg)
+	sendToAll(user , msg)
+	
+	#make return message about ready command
+	ret = {'cmd':'OK','data':''}
+	ret = json.dumps(ret)
+
 	print 'UNREADY : ' , user , data , ret #status message
 	return ret
 
@@ -97,23 +135,53 @@ def proc_start(user , data , request):
 
 
 def proc_kick(user , data , request):
-	print 'KICK : ' , user , data , ret #status message
-	return ret
+	print 'KICK : ' , user , data #status message
+	return
 
 #to do
 def proc_quit(user , data , request):
+
+	#send quit meesage to all user in the same room
 	conn_user = Member.objects.get(userID = user)
 	data = {'nickname':conn_user.nickname}
 	msg = {'cmd':'QUIT','data':data}
 	msg = json.dumps(msg)
 	sendToAll(user , msg)
+	
+	#delete socket from socket list
 	conn_user = MemberInRoom.objects.get(userID = user)
+	room_seq = conn_user.room_seq
+	for index in range(len(socket_list)):
+		if int(conn_user.sockID) == int(`id(socket_list[index])`):
+			socket_list.pop(index)
+	
+	#delete MemberInRoom data
 	conn_user.delete()
+
+	room = Room.objects.get(seq = room_seq)	
+
+	if user == room.owner:
+		if room.getCurUserNumber() == 0:
+			#destroy the room
+			print 'BOOM : ' , room
+			room.delete()
+		
+		else:
+			#change owner
+			new_owner = MemberInRoom.objects.filter(room_seq = room.seq)[0]
+			room.owner = new_owner.userID
+			room.save()
+			new_owner = Member.objects.get(userID = room.owner)
+			data = {'userID' : new_owner.userID , 'nickname' : new_owner.nickname }
+			msg = {'cmd':'CHANGE_OWNER','data':data}
+			msg = json.dumps(msg)
+			sendToAll(new_owner.userID , msg)
+
 	print 'QUIT : ' , user , msg #status message
 	return
 
 def proc_change_setting  (user , data , request):
-	print 'CHANGESETTING : ' , user , msg #status message
+	print 'CHANGE_SETTING : ' , user , msg #status message
 	print data
 	return data
 process = {
@@ -140,10 +208,10 @@ def webSocket(request,room_seq):
 		print 'Socket List Check: Done'
 
 		#check session (check user's login)
-		print 'Check Session' ,
+		
 		if not checkSession(request):
 			return HttpResponse("false")
-		print ': Done'
+		print 'Check Session : Done'
 		
 		#get socket meta data
 		socket = request.META['wsgi.websocket']
@@ -172,7 +240,7 @@ def webSocket(request,room_seq):
 				print index , MemberInRoom.objects.get(sockID = `id(socket_list[index])`).userID ,
 				print `id(socket_list[index])`
 
-		print 'Connect : ' , request.session['userID'] , `id(socket)`
+		print 'Connect :' , request.session['userID'] , `id(socket)`
 		
 		#listen socket's sending data
 		while True:
@@ -184,15 +252,15 @@ def webSocket(request,room_seq):
 			data = msg.get('data')#get data
 
 			#message
-			print 'Recv : ' , userID , msg
+			print 'Recv :' , userID , msg
 		
 			#excute command
 			try:
 				cmd = process[command](userID , data , request)
+				socket.send(cmd)
+				print 'Send :' , cmd
 			except :
 				continue
-			
-			socket.send(cmd)
 	
 	return HttpResponse("false")
 
