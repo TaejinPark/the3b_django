@@ -9,7 +9,7 @@ from www.functions import *
 import gevent
 import ast
 import pdb
-
+the3b_debug = False
 socket_list = [] # empty socket list
 
 def sendToAll(user,msg):
@@ -20,15 +20,12 @@ def sendToAll(user,msg):
 		for member in members:
 			if int(member.sockID) == sockID:
 				socket.send(msg)
-	
 	print 'SendToALL : ' , msg #status message
 
 def proc_login(user , data , request):
 	#make return message
 	ret = {'cmd':'OK','data':''}
-	ret = json.dumps(ret)
-
-	print 'LOGIN : ' , user , data , ret #status message
+	ret = json.dumps(ret)	
 	return ret
 
 def proc_join(user , data , request):
@@ -46,8 +43,6 @@ def proc_join(user , data , request):
 	#set data to print message
 	ret = {'cmd':'OK','data':''}
 	ret = json.dumps(ret)
-
-	print 'JOIN : ' , user , data , ret #status message
 	return ret
 
 
@@ -67,9 +62,7 @@ def proc_userlist(user , data , request):
 
 	#make json and send user list
 	ret = {'cmd':'USERLIST','data':members}
-	ret = json.dumps(ret)
-
-	print 'USERLIST : ' , user , data , ret #status message
+	ret = json.dumps(ret)	
 	return ret
 
 
@@ -80,8 +73,6 @@ def proc_chat(user , data , request):
 	msg = {'cmd':'CHAT','data':data}
 	msg = json.dumps(msg)
 	sendToAll(user , msg)
-
-	print 'CHAT : ' , user , data  #status message
 	return
 
 
@@ -101,9 +92,7 @@ def proc_ready(user , data , request):
 	
 	#make return message about ready command
 	ret = {'cmd':'OK','data':''}
-	ret = json.dumps(ret)
-
-	print 'READY : ' , user , data , ret #status message
+	ret = json.dumps(ret)	
 	return ret
 
 
@@ -122,20 +111,21 @@ def proc_unready(user , data , request):
 	
 	#make return message about ready command
 	ret = {'cmd':'OK','data':''}
-	ret = json.dumps(ret)
-
-	print 'UNREADY : ' , user , data , ret #status message
+	ret = json.dumps(ret)	
 	return ret
 
 
 def proc_start(user , data , request):
-	print 'START : ' , user , data , ret #status message
+	msg = {'cmd':'START','data':''}
+	msg = json.dumps(msg)
+	sendToAll(user , msg)
+
+	if the3b_debug == True:
+		print 'START : ' , user , data , ret #status message
 	return ret
 
 
 def proc_kick(user , data , request):
-	
-	
 	#get room information
 	room_seq = MemberInRoom.objects.get(userID = user).room_seq
 	room = Room.objects.get(seq = room_seq)
@@ -163,8 +153,6 @@ def proc_kick(user , data , request):
 	#make return message about Kick command
 	ret = {'cmd':'OK','data':''}
 	ret = json.dumps(ret)
-
-	print 'KICK : ' , user , data #status message
 	return 
 
 #to do
@@ -193,8 +181,7 @@ def proc_quit(user , data , request):
 		if room.getCurUserNumber() == 0:
 			#destroy the room
 			print 'BOOM : ' , room
-			room.delete()
-		
+			room.delete()		
 		else:
 			#change owner
 			new_owner = MemberInRoom.objects.filter(room_seq = room.seq)[0]
@@ -206,7 +193,6 @@ def proc_quit(user , data , request):
 			msg = json.dumps(msg)
 			sendToAll(new_owner.userID , msg)
 
-	print 'QUIT : ' , user , msg #status message
 	return
 
 def proc_change_setting  (user , data , request):
@@ -227,6 +213,10 @@ process = {
 }
 #import pdb;pdb.set_trace();
 def webSocket(request,room_seq):
+	#check session (check user's login)		
+	if not checkSession(request):
+		return HttpResponse("false")
+		
 	if request.environ.get('wsgi.websocket'):
 		#print socket list and check disconnected socket
 		for index in range(len(socket_list)):
@@ -234,42 +224,33 @@ def webSocket(request,room_seq):
 				socket_list[index].send(json.dumps({'cmd':'OK','data':''}))
 			except:
 				socket_list.pop(index)
-		print 'Socket List Check: Done'
-
-		#check session (check user's login)
-		
-		if not checkSession(request):
-			return HttpResponse("false")
-		print 'Check Session : Done'
 		
 		#get socket meta data
 		socket = request.META['wsgi.websocket']
-		print 'Get Socket : Done'
+		request.session['sockID'] = `id(socket)`
 
-		
-		#insert the socket into socket list
+		#add socket to socket list
+		socket_list.append(socket)
+
+		#make MemberInRoom data		
 		userID = request.session['userID']
 		if MemberInRoom.objects.filter(userID = userID).count():
 			conn_user = MemberInRoom.objects.get(userID = userID)
 		else:
 			conn_user = MemberInRoom()
-
-		request.session['sockID'] = `id(socket)`
 		conn_user.userID = userID
 		conn_user.room_seq = room_seq
 		conn_user.sockID = `id(socket)`
 		conn_user.save()
-		print 'Set Data : Done' ,
 		
-		socket_list.append(socket)
-		print 'Add Socket to Socket List : Done'
-		
-		print '--Socket ID list--'
-		for index in range(len(socket_list)):
-				print index , MemberInRoom.objects.get(sockID = `id(socket_list[index])`).userID ,
-				print `id(socket_list[index])`
-
 		print 'Connect :' , request.session['userID'] , `id(socket)`
+		
+		'''
+		print '--Socket ID list--'
+			for index in range(len(socket_list)):
+					print index , MemberInRoom.objects.get(sockID = `id(socket_list[index])`).userID ,
+					print `id(socket_list[index])`
+		'''
 		
 		#listen socket's sending data
 		while True:
@@ -289,6 +270,7 @@ def webSocket(request,room_seq):
 				socket.send(cmd)
 				print 'Send :' , cmd
 			except :
+				print 'Send : No'
 				continue
 	
 	return HttpResponse("false")

@@ -6,6 +6,7 @@ from django.core.urlresolvers import reverse
 from django.views.decorators.csrf import csrf_exempt
 import json
 #pdb.set_trace()
+
 #manage session
 def checkSession(request):
 	try:

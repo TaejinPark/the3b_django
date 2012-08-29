@@ -387,7 +387,9 @@ function loadRoomList(start){
 				$.post('/joinInRoom/',
 					{room_seq:room_seq},
 					function(data){
-						if(data)
+						if(data == 'full')
+							alert('인원이 가득 찼습니다.')
+						else if(data != 'false')
 							location.href="/room/"+data+'/'; // go game room
 						else
 							alert('방이 존재하지 않습니다.')

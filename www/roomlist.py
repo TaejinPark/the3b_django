@@ -151,7 +151,11 @@ def doMakeRoom(request):
 def joinInRoom(request):
 	room_seq = int(request.POST['room_seq'])
 	if Room.objects.filter(seq = room_seq).count():
-		return HttpResponse(room_seq)
+		room = Room.objects.get(seq = room_seq)
+		if room.getCurUserNumber() == room.maxuser:
+			return HttpResponse('full')
+		else:
+			return HttpResponse(room_seq)
 	else:
 		return HttpResponse('false')
 
@@ -176,7 +180,7 @@ def getRoomListToJson(request):
 	room_number = roomlist.count()
 	
 	#if data is empty
-	if room_number == 0: 
+	if room_number == 0:
 		#there is no waiting room
 		rooms_json = '[]'
 	

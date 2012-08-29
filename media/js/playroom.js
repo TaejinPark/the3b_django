@@ -233,6 +233,8 @@ function process(msg){
 		
 		case "CHANGE_OWNER": 
 			owner = data.data.userID; chatAppend('['+data.data.nickname+'] 님이 방장이 되셨습니다.');
+			if(owner == userid)
+				$('#start_button').css('display','block');
 			sendCmd="USERLIST"; send("USERLIST",{});
 			break;
 		
@@ -345,6 +347,7 @@ function sendUserList(){
 }
 
 function userAppend(a_userid,a_nickname){
+	
 	var str = '<div class="user_'+a_userid+'">'+
 			'<a class="nick_'+a_nickname+'" type="button" data-inline="true">'+(owner==a_userid?'방장':'강퇴')+'</a>'+
 			'<span>'+a_nickname+'</span>'+
