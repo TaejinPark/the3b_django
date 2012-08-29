@@ -218,7 +218,10 @@ function process(msg){
 		
 		case "KICK": 
 			chatAppend('['+data.data.nickname+"] 님이 강퇴 당하셨습니다.");
-			$('.user_'+data.data.userID).remove(); break;
+			$('.user_'+data.data.userID).remove();
+			if(data.data.userID == userid)
+				location.href = '/roomlist/'
+			break;
 		
 		case "CHANGE_SETTING": 
 			chatAppend("방 설정이 다음과 같이 변경되었습니다.");

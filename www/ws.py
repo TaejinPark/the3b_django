@@ -41,12 +41,11 @@ def proc_join(user , data , request):
 			'nickname'	: member.nickname }
 	msg = {'cmd':'JOIN','data':data}
 	msg = json.dumps(msg)
+	sendToAll(user , msg)
 
 	#set data to print message
 	ret = {'cmd':'OK','data':''}
 	ret = json.dumps(ret)
-	
-	sendToAll(user , msg)
 
 	print 'JOIN : ' , user , data , ret #status message
 	return ret
@@ -135,8 +134,38 @@ def proc_start(user , data , request):
 
 
 def proc_kick(user , data , request):
+	
+	
+	#get room information
+	room_seq = MemberInRoom.objects.get(userID = user).room_seq
+	room = Room.objects.get(seq = room_seq)
+
+	#check user who want to kick owner is owner
+	if not user == room.owner:
+		return
+
+	#send kick message to all user in same room
+	kicked = Member.objects.get(userID = data['userID'])
+	data = {'nickname':kicked.nickname,'userID':kicked.userID}
+	msg = {'cmd':'KICK','data':data}
+	msg = json.dumps(msg)
+	sendToAll(user , msg)
+
+	#delete kicked user's socket from socket list
+	kicked = MemberInRoom.objects.get(userID = kicked.userID)
+	for index in range(len(socket_list)):
+		if int(kicked.sockID) == int(`id(socket_list[index])`):
+			socket_list.pop(index)
+
+	#remove MemeberInRoom data
+	kicked.delete()
+
+	#make return message about Kick command
+	ret = {'cmd':'OK','data':''}
+	ret = json.dumps(ret)
+
 	print 'KICK : ' , user , data #status message
-	return
+	return 
 
 #to do
 def proc_quit(user , data , request):
