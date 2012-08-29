@@ -129,7 +129,7 @@ function doLogin(obj){
 	});
 }
 
-function vaildForm(){ // check input values
+function validForm(){ // check input values
 	var obj = $(this);
 	var spanobj = obj.next('span');
 	if(!obj.val()){

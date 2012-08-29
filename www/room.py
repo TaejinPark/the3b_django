@@ -19,18 +19,17 @@ def index(request , room_seq):
 	room = Room.objects.get(seq = room_seq)
 	user = Member.objects.get(userID = request.session['userID'])
 	
-	
-
 	info = {
 		'name'		: room.name , 
 		'room_seq'	: room_seq , 
 		'userID'	: user.userID ,
 		'nickname'	: user.nickname ,
 		'owner'		: room.owner ,
-		'sid'		: user.userID ,
+		'sessionid'		: user.userID ,
 		'curuser'	: room.getCurUserNumber() ,
 		'maxuser'	: room.maxuser ,
-		'gametype'	: room.get_gametype_display() ,
+		'gametype_letter' : room.gametype ,
+		'gametype_text'	: room.get_gametype_display() ,
 		'gameoption': getGameOptionText(room) , 
 		'option'	: room.gameoption
 	}

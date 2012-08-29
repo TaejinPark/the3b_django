@@ -1,3 +1,9 @@
+/* bingo variables */
+var currentNickname = '';
+var bingoUser = [];
+var bingoEndUser = [];
+var bingoLine = 0;
+var currentBingo = 0;
 
 function startBingo(){
 	play = true;

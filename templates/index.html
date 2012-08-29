@@ -16,7 +16,7 @@
 				if(data=="true")// already login
 					location.href="/roomlist/";
 			});
-			$('#join input').blur(vaildForm);
+			$('#join input').blur(validForm);
 			$(".login").click(function(){view_join_login('login');});	// display / non-display login form
 			$(".join").click(function(){view_join_login('join');});	// display / non-display join form
 			$('#login form').submit(function(){doLogin($(this));return false;});// do login process

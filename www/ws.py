@@ -157,7 +157,6 @@ def proc_kick(user , data , request):
 
 #to do
 def proc_quit(user , data , request):
-
 	#send quit meesage to all user in the same room
 	conn_user = Member.objects.get(userID = user)
 	data = {'nickname':conn_user.nickname}

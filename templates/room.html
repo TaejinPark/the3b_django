@@ -5,19 +5,21 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">	
 		<meta name="viewport" content="width=device-width, initial-scale=1">	
-		<link   href="/media/js/jquery/jquery.mobile-1.1.0.css" rel="stylesheet"/>
 		<script src ="http://code.jquery.com/jquery-1.6.4.min.js"></script>
+		<link   href="/media/js/jquery/jquery.mobile-1.1.0.css" rel="stylesheet"/>
 		<script src ="/media/js/jquery/jquery.mobile-1.1.0.min.js"></script>
-		<script src ="/media/js/playroom.js"></script>
+		<script src ="/media/js/websocket.js"></script>
+		<script src ="/media/js/room.js"></script>
 		<script src ="/media/js/bingo.js"></script>
-		<link 	href="/media/css/playroom.css" rel="stylesheet" >
+		<link 	href="/media/css/room.css" rel="stylesheet" >
 		<script type="text/javascript">
 		
 			var room_seq = "{{room_seq}}";
 			var userid = "{{userID}}";
 			var nickname = "{{nickname}}";
 			var owner = "{{owner}}";
-			var sid = "{{sid}}";
+			var sessionid = "{{sessionid}}";
+			var gametype = "{{gametype_letter}}";
 			$(document).ready(function(){
 				$.post("/checkLogin/",
 				function(data){
@@ -29,16 +31,19 @@
 						init(); // websocket connection
 					}
 				});
-				
+				viewGameOption("{{gametype_letter}}");
+				changeLadderOption(maxuser)
 				$('#debug input').keypress(function(e){
 					if(e.keyCode==13) sendDebug();
 				});
 				$("#participant_list").css('display','none');
 				$("#chat").css('display','block');
-			});		
+			});
+
 			window.onbeforeunload=function(){
-				$("#exit_button a").click(goExit());
+				goExit();
 			};
+
 		</script>
 	</head>
 	
@@ -69,7 +74,7 @@
 				</div>
 				<div>게임 종류 : 
 					<span>
-						{{gametype}}
+						{{gametype_text}}
 					</span>
 				</div>
 				<div>게임 옵션 : 
@@ -85,56 +90,41 @@
 				<div>
 					<div id="participant_num" data-role="fieldcontain">
 						<div>참가자</div>
-					 	<input type="range" name="maxuser" value="maxuser" min="2" max="8" data-theme="e"/>
+					 	<input type="range" id="maxuser" name="maxuser" value="{{maxuser}}" min="2" max="8" data-theme="e" onchange="changeLadderOption(value)"/>
 					</div>
-					<div id="select_game_type">
-						<div>게임 종류</div>
-						<select id="select_game_type" name="select_game_type" data-native-menu="false" onchange="viewGameOption(value)">
-							<option value="bingo">빙고</option>
-							<option value="dice">주사위</option>
-							<option value="ladder">사다리</option>
-							<option value="pirate">해적</option>
-						</select>
-					</div>
-					<input type="hidden" name="select_game_type" value="bingo" />
-					<div id="bingo_option_line"data-role="fieldcontain">
-						<div>빙고 라인 갯수</div>
-					 	<input type="range" name="gameoption" value="{{option}}" min="2" max="5" data-theme="e"/>
-					</div>
-
-					<div >
-						<span>게임 옵션</span>
+					<div id='select_game_type'>
 						<div>
-							<select name="select_game_type" data-native-menu="false" onchange="viewGameOption(value)">
-								<option value="0" selected="selected">빙고</option>
-								<option value="1">주사위</option>
-								<option value="2">사다리</option>
-								<option value="3">해적</option>
+							<span>게임 종류</span>
+							<select name="gametype" id="gametype" data-native-menu="false" onchange="viewGameOption(value)">
+								<option value="B" selected="selected">빙고</option>
+								<option value="D">주사위</option>
+								<option value="L">사다리</option>
+								<option value="P">해적</option>
 							</select>
 						</div>
-						<div id="game_0">
-							<label for="gameoption_0">빙고 줄</label>
-							<input type="range" name="gameoption_0" id="gameoption_0" value="1" min="1" max="5" data-theme="a" data-track-theme="b"/>
+						<div id="game_B">
+							<label for="gameoption_B">빙고 줄</label>
+							<input type="range" id="gameoption_B" name="gameoption_B" value="{{option}}" min="1" max="5" data-theme="a" data-track-theme="b"/>
 						</div>
-						<div id="game_1" class="dspn">
+						<div id="game_D" class="dspn">
 							<span>주사위값이 더 큰 사람이</span>
-							<select id="gameoption_1" name="gameoption_1" data-role="slider" data-theme="a">
-								<option value="0">패자</option>
-								<option value="1">승자</option>
+							<select id="gameoption_D" name="gameoption_D" data-role="slider" data-theme="a">
+								<option value="L">패자</option>
+								<option value="W">승자</option>
 							</select>
 						</div>
-						<div id="game_2" class="dspn" name="gameoption_2">
-							방 생성후 조건 입력 
+						<div id="game_L" class="dspn">
+							<div type="hidden" id="gameoption_L" name="gameoption_L">
+							</div>
 						</div>
-						<div id="game_3" class="dspn">
+						<div id="game_P" class="dspn">
 							<span>당첨 칼을 꽂는 사람이</span>
-							<select id="gameoption_3" name="gameoption_3" data-role="slider" data-theme="a">
-								<option value="0">패자</option>
-								<option value="1">승자</option>
+							<select id="gameoption_P" name="gameoption_P" data-role="slider" data-theme="a">
+								<option value="L">패자</option>
+								<option value="W">승자</option>
 							</select> 
 						</div>
 					</div>
-
 					<a id="config_confirm" type="button" data-inline="true;">적용</a>
 				</div>
 			</div>
