@@ -39,13 +39,11 @@ $(document).ajaxSend(function(event, xhr, settings) {
 
 $(window).resize(function() {
 	resizeContent();
-	changeLadderOption($("#maxuser").val())
 });
 
 $("div[data-role='page']").live( "pageshow", function( event )
 {
 	resizeContent();
-	changeLadderOption($("#maxuser").val())
 });
 
 var play = false;
@@ -84,13 +82,6 @@ function resizeContent()
 	ctx.fillText("Let's Dice!!!",80,80);
 }
 
-function view_config(id){
-	$("#room_info").css("display" , "none");
-	$("#room_config").css("display" , "none");
-	if(id != 'none')
-		$("#"+id).css("display" , "block");
-}
-
 function view_folding(flag){
 	$("#unfold").css("display" , "none");
 	$("#fold").css("display" , "none");
@@ -125,18 +116,32 @@ function viewParticipant(){
 	$("#participant_list").css('display','block');
 }
 
+function view_config(id){
+	$("#room_info").css("display" , "none");
+	$("#room_config").css("display" , "none");
+	if(id != 'none')
+		$("#"+id).css("display" , "block");
+	
+	if(id == "room_config"){
+		
+		viewGameOption(gametype)
+	}
+}
+
 function viewGameOption(value){ // view game option 
 	$("#game_B").css("display","none");
 	$("#game_D").css("display","none");
 	$("#game_L").css("display","none");
 	$("#game_P").css("display","none");
 	$("#game_"+value).css("display","block");
+	$('#gametype').val(value)
+	gametype = value ;
 }
 
-function changeLadderOption(value){
+function changeLadderOption(){
 	var maxuser = $("#maxuser").val()
-	str = '<br/>'
+	var str = '<br/>'
 	for(i = 1 ; i <= maxuser ; i++)
 		str += '<input type="text" id="penalty' + i +'" placeholder="벌칙' + i +'"/><br/>'
-	$("#gameoption_L").html(str)
+	$("#gameoption_L").html(str).parent().trigger("create");
 }

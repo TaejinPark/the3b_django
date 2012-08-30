@@ -6,10 +6,11 @@ from django.core.urlresolvers import reverse
 from django.views.decorators.csrf import csrf_exempt
 from www.models import *
 from www.functions import *
+from www.room import gameOptionToText
 import gevent
 import ast
 import pdb
-the3b_debug = False
+#import pdb;pdb.set_trace();
 socket_list = [] # empty socket list
 
 def sendToAll(user,msg):
@@ -119,9 +120,6 @@ def proc_start(user , data , request):
 	msg = {'cmd':'START','data':''}
 	msg = json.dumps(msg)
 	sendToAll(user , msg)
-
-	if the3b_debug == True:
-		print 'START : ' , user , data , ret #status message
 	return ret
 
 
@@ -194,10 +192,26 @@ def proc_quit(user , data , request):
 
 	return
 
+
 def proc_change_setting  (user , data , request):
-	print 'CHANGE_SETTING : ' , user , msg #status message
-	print data
-	return data
+	#change room data
+	pdb.set_trace()
+	room_seq = MemberInRoom.objects.get(userID = user).room_seq
+	room = Room.objects.get(seq = room_seq)
+	room.gametype  = data['gametype']
+	room.maxuser = data['maxuser']
+	room.gameoption = str(data['gameoption'])
+	room.save()
+
+	gameoption_text = gameOptionToText(room)
+	data.update({'gameoption_text':gameoption_text})
+	#send changed room status to all user in same room
+	msg = {'cmd':'CHANGE_SETTING','data':data}
+	msg = json.dumps(msg)
+	sendToAll(user , msg)
+	return
+
+
 process = {
 	'LOGIN' 			: proc_login ,
 	'JOIN' 				: proc_join ,
@@ -210,7 +224,7 @@ process = {
 	'QUIT' 				: proc_quit ,
 	'CHANGE_SETTING' 	: proc_change_setting  
 }
-#import pdb;pdb.set_trace();
+
 def webSocket(request,room_seq):
 	#check session (check user's login)		
 	if not checkSession(request):

@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from django.views.decorators.csrf import csrf_exempt
 from www.models import *
 from www.functions import *
-
+import pdb
 #/index/
 def index(request , room_seq):
 	#check session
@@ -30,7 +30,7 @@ def index(request , room_seq):
 		'maxuser'	: room.maxuser ,
 		'gametype_letter' : room.gametype ,
 		'gametype_text'	: room.get_gametype_display() ,
-		'gameoption': getGameOptionText(room) , 
+		'gameoption': gameOptionToText(room) , 
 		'option'	: room.gameoption
 	}
 	return render_to_response('room.html',info)
@@ -41,17 +41,26 @@ def askPlay(request , room_seq):
 def askExit(request , room_seq):
 	return render_to_response('askexit.html')
 
-def getGameOptionText(room):
+def gameOptionToText(room):
 	data = ''
-	gameoption_text = {
-		'B' : str(room.gameoption) + " 줄 완성시 승리",
-		'D' : "주사위 합이 큰 사람이", 
-		'L' : "",
-		'P' : "당첨 칼을 꽂는 사람이"
-	}
-	data += gameoption_text.get(room.gametype)
-	return data
+	if room.gametype == 'B' :
+		gameoption_text = str(room.gameoption) + " 줄 완성시 승리"
 
+	elif room.gametype == 'D' : 
+		gameoption_text = "주사위 합이 큰 사람이" + dict_OUTCOME[str(room.gameoption)]
+
+	elif room.gametype == 'L' : 
+		gameoption_text =  "벌칙 목록 - "
+		for penalty in eval(room.gameoption):
+			gameoption_text += eval(room.gameoption)[penalty] + ' , '
+
+	elif room.gametype == 'P' : 
+		gameoption_text = "당첨 칼을 꽂는 사람이" + dict_OUTCOME[str(room.gameoption)]
+
+	else:
+		gameoption_text = "false"
+
+	return gameoption_text #return generated text
 
 
 

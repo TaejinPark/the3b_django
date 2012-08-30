@@ -86,10 +86,10 @@ function process(msg){
 		
 		case "CHANGE_SETTING": 
 			chatAppend("방 설정이 다음과 같이 변경되었습니다.");
-			chatAppend("최대 인원: "+data.data.MaxUser+"명, 승리조건: "+data.data.GameOption+"줄");
-			$("#maxUsers").text(data.data.MaxUser); $("#gameOption").text(data.data.GameOption);
-			$("#room_config").find("input").filter("[name=maxuser]").val(data.data.MaxUser).end()
-			.filter("[name=gameoption]").val(data.data.GameOption);
+			chatAppend("최대 인원: "+data.data.maxuser+"명 , " + data.data.gameoption_text);
+			$("#maxUsers").text(data.data.maxuser); $("#gameOption").text(data.data.gameoption_text);
+			$("#room_config").find("input").filter("[name=maxuser]").val(data.data.maxuser).end()
+			.filter("[name=gameoption]").val(data.data.gameoption);
 			break;
 		
 		case "CHANGE_OWNER": 
@@ -295,10 +295,18 @@ function initJoin(){
 			return;
 		var data = {};
 		var gametype = $(this).parent().find("#gametype").val();
-		var obj = $(this).parent().find("#gameoption_"+gametype);
-		data.MaxUser = obj.filter('[name=maxuser]').val();
-		data.GameOption = obj.filter('[name=gameoption]').val();
-		data.gameoption = $(this).parent().find("#gameoption_"+gametype).val();
+		
+		//set gametype and gameoption
+		data.maxuser = $("#maxuser").val() ;
+		data.gametype = gametype ;
+		if(gametype != 'L')
+			data.gameoption = $(this).parent().find("#gameoption_"+gametype).val();
+		else{
+			data.gameoption = {} ;
+			for( i = 1 ; i <= data.maxuser ; i++)
+				data.gameoption['penalty'+i] = $('#penalty'+i).val()
+		}
+
 		sendCmd = "CHANGE_SETTING";
 		send("CHANGE_SETTING",data);
 		$("#fold a").click();
@@ -320,7 +328,5 @@ function showResult(list){
 function goExit(){
 	sendCmd = "QUIT";
 	send("QUIT",{});
-	setTimeout(function(){
-		location.href="/roomlist/";
-	},1000);
+	//setTimeout(function(){location.href="/roomlist/";},1000);
 }

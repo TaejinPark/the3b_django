@@ -32,7 +32,7 @@
 					}
 				});
 				viewGameOption("{{gametype_letter}}");
-				changeLadderOption(maxuser)
+				changeLadderOption()
 				$('#debug input').keypress(function(e){
 					if(e.keyCode==13) sendDebug();
 				});
@@ -96,7 +96,7 @@
 						<div>
 							<span>게임 종류</span>
 							<select name="gametype" id="gametype" data-native-menu="false" onchange="viewGameOption(value)">
-								<option value="B" selected="selected">빙고</option>
+								<option value="B">빙고</option>
 								<option value="D">주사위</option>
 								<option value="L">사다리</option>
 								<option value="P">해적</option>
@@ -104,7 +104,7 @@
 						</div>
 						<div id="game_B">
 							<label for="gameoption_B">빙고 줄</label>
-							<input type="range" id="gameoption_B" name="gameoption_B" value="{{option}}" min="1" max="5" data-theme="a" data-track-theme="b"/>
+							<input type="range" id="gameoption_B" name="gameoption_B" value="1" min="1" max="5" data-theme="a" data-track-theme="b"/>
 						</div>
 						<div id="game_D" class="dspn">
 							<span>주사위값이 더 큰 사람이</span>
