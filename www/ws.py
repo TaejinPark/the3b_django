@@ -237,7 +237,6 @@ def proc_game(user , data , request):
 
 	#game process
 	msg_ret = game_process[command](user , data , request)
-	
 	sendToAll(user,msg_ret['msg'])
 	return msg_ret
 

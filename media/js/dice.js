@@ -53,7 +53,7 @@ function draw_dice()
 	canvas_mid_pos_x = canvas_height / 2 ;
 	
 	ctx = document.getElementById("dice_canvas").getContext("2d");
-	ctx.clearRect(0,0,canvas_width,canvas_height); // clear canvas			
+	ctx.clearRect(0,0,canvas_width,canvas_height); // clear canvas	
 	ctx.lineWidth= 5 ;
 	
 	var dice_num = Array() ;	//dice number 1~6

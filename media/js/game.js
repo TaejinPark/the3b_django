@@ -22,13 +22,21 @@ function showRemainTime(){
 /* time count function */
 
 function showResult(list){
-	var str = "";
+	var str = '<center style="margin:10px; padding:10px;" >' ;
 	for(var a=0,loopa=list.length; a<loopa; a++){
-		str += '<div>'+
-				'<span>'+list[a].Nickname+'</span>'+
-				list[a].result+'등'+
-				'</div>';
+		if(list[a].ranking == 'W' || list[a].ranking == 1) 
+			str += '<div style="font-weight:bold; font-size:200%;">';
+		else
+			str += '<div style="font-size:150%;">';
+		str += list[a].ranking ;
+		
+		if(gametype == 'D')
+			str += ' 등 - 주사위값 ' + list[a].value;
+
+		str += ' : ' + list[a].nickname + 
+				'</div>' ;
 	}
+	str += '</center>';
 	$("#gamedisplay").css('display','none');
 	$("#gameResult").html(str).css('display','block');
 }
