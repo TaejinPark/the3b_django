@@ -9,6 +9,20 @@ var square_distance ;		//the distance between squares
 var dot_radius ; //dice dot radius
 var ctx 		//canvas context	
 var i ;
+function startDice()
+{
+	viewPlay();
+	$("#cast_dice a").click(draw_dice);
+	startTimeCount(0);//10
+	setTimeout(draw_dice,0);//11000
+}
+
+function sendDiceResult(dice_result){
+	var data = {};
+	data = {cmd:"DICE_RESULT",data:dice_result};
+	send("GAMECMD",data);
+}
+
 function draw_dice()
 {
 	//get device width and set canvas size as device width
@@ -50,9 +64,12 @@ function draw_dice()
 	draw_sqrt_top_mid(dice_num[0]);
 	draw_sqrt_btm_left(dice_num[1]);
 	draw_sqrt_btm_right(dice_num[2]);
-	var innerhtml = "<center>당신의 주사위의 합은 " + (dice_num[0] + dice_num[1] + dice_num[2]) + " 입니다.</center>";
+	var dice_result = dice_num[0] + dice_num[1] + dice_num[2] ;
+	var innerhtml = "<center>당신의 주사위의 합은 " + dice_result + " 입니다.<br/>서버로 부터 결과를 기다리고 있습니다.</center>";
 	document.getElementById("cast_dice").innerHTML = innerhtml ;
 	$("#dice_result").css("display","block")
+	clearTimeCount();
+	sendDiceResult(dice_result);
 }
 function draw_sqrt_top_mid(dice_num)
 {

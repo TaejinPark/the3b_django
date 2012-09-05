@@ -3,13 +3,6 @@ var socket;
 var sendCmd;
 var userlist;
 var debug = true;
-var currentNumber = 1;
-var bingoSelect = [];
-var selectActivate = false;
-var currentSelectTime = 0;
-var currentSelectTime2 = 0;
-var interval = null;
-var interval2 = null;
 
 function init(){
   var host = "ws://localhost:8000/WS/"+room_seq+"/";
@@ -87,7 +80,9 @@ function process(msg){
 		case "CHANGE_SETTING": 
 			chatAppend("방 설정이 다음과 같이 변경되었습니다.");
 			chatAppend("최대 인원: "+data.data.maxuser+"명 , " + data.data.gameoption_text);
-			$("#maxUsers").text(data.data.maxuser); $("#gameOption").text(data.data.gameoption_text);
+			$("#maxUsers").text(data.data.maxuser); 
+			$("#gameOption").text(data.data.gameoption_text);
+			$("#gameType").text(data.data.gametype_text);
 			$("#room_config").find("input").filter("[name=maxuser]").val(data.data.maxuser).end()
 			.filter("[name=gameoption]").val(data.data.gameoption);
 			break;
@@ -100,14 +95,31 @@ function process(msg){
 			break;
 		
 		case "READY": 
-			chatAppend('['+data.data.nickname+"] 님이 준비가 완료되었습니다."); break;
+			chatAppend('['+data.data.nickname+"] 님이 준비가 완료되었습니다.");
+			$("#ready_flag_"+data.data.nickname).text("AlReady | ");
+			break;
 		
 		case "UNREADY": 
-			chatAppend('['+data.data.nickname+"] 님이 준비를 취소 하였습니다."); break;
+			chatAppend('['+data.data.nickname+"] 님이 준비를 취소 하였습니다."); 
+			$("#ready_flag_"+data.data.nickname).text("UnReady | ");
+			break;
 		
+		case "WAIT":
+			for( i = 0 ; i < data.data.length ; i++)
+				if(data.data[i] == nickname)
+					chatAppend('['+data.data[i]+"] 님 준비해 주시기 바랍니다."); 
+				else	
+					chatAppend('['+data.data[i]+"] 님이 준비가 되지 않았습니다."); 
+			break; 
 		case "START": 
 			chatAppend("게임이 곧 시작됩니다. 준비하세요!");
-			setTimeout(startBingo,4000); 
+			play = true ;
+			switch(gametype){
+				case "B" : setTimeout(startBingo, 4000); break;
+				case "D" : setTimeout(startDice , 0000); break;
+				case "L" : setTimeout(startLadder,4000); break;
+				case "P" : setTimeout(startPirate,4000); break;
+			}
 			break;
 		
 		case "QUIT": 
@@ -134,43 +146,19 @@ function process(msg){
 			}
 			break;
 
-		case "BINGO_START": 
-			$("#remaintime").css('display','none').next().css('display','none'); $("#turn").css('display','block');
-			$("#bingoTable a").unbind("click").click(bingo);
+		case "GAMECMD": 
+			game_process(data.data);
 			break;
-		
-		case "BINGO_CURRENT": 
-			$("#turn > div").eq(0).text(data.data.CurrentNickname).end().eq(1).text(data.data.NextNickname);
-			currentNickname = data.data.CurrentNickname;
-			if(data.data.CurrentNickname==nickname) showMyTurn();
-			break;
-		
-		case "BINGO_SELECT": 
-			bingoUser = []; bingoEndUser = []; markSelect(data.data); break;
-		
-		case "BINGO_BINGO": 
-			bingoUser.push(data.data.nickname);
-			message(bingoUser.join(", ")+"님이 한줄 이상을 완성 했습니다!"+(bingoEndUser.length>0?"<br />"+bingoEndUser.join(", ")+"님이 빙고를 완성 했습니다!":""));
-			break;
-		
-		case "BINGO_LAST": 
-			bingoUser.push(data.data.nickname);
-			message((bingoUser.length>0?bingoUser.join(", ")+"님이 빙고 한줄을 완성 했습니다!":"")+bingoEndUser.join(", ")+"님이 빙고를 완성 했습니다!");
-			break;
-		
-		case "BINGO_END": 
-			showResult(data.data.result); break;
-		
-		case "INSTANCE_EXIT": 
-			setTimeout(goExit,10000); break;
-		
 
+		case "INSTANCE_EXIT": 
+			setTimeout(goExit,10000); 
+			break;
 	}
 }
 
 function chatAppend(msg){
 	var obj = $("#chat");
-	obj.append("<br />"+msg);
+	obj.append("<br/>"+msg);
 	var scroll_position  = $("#chat").scrollTop();
 	$("#chat").scrollTop(scroll_position+20);
 }
@@ -211,9 +199,10 @@ function sendUserList(){
 
 function userAppend(a_userid,a_nickname){
 
-	var str = '<div class="user_'+a_userid+'">'+
-			'<a class="nick_'+a_nickname+'" type="button" data-inline="true">'+(owner==a_userid?'방장':'강퇴')+'</a>'+
-			'<span>'+a_nickname+'</span>'+
+	var str = '<div class="user_'+a_userid+'">' + 
+				'<a class="nick_'+a_nickname+'" type="button" data-inline="true">'+(owner==a_userid?'방장':'강퇴')+'</a>' ;
+		str += (a_userid == owner ) ? '<span id="ready_flag_'+a_nickname+'">Host | </span>' : '<span id="ready_flag_'+a_nickname+'">UnReady | </span>' ;
+		str +='<span>'+a_nickname+'</span>'+
 			'</div>';
 	$("#participant_list").append(str).parent().trigger("create");
 	$('#participant_list div a').unbind('click').click(function(){
@@ -279,9 +268,9 @@ function initJoin(){
 		if(e.keyCode==13) sendChat();
 	});
 	$("#play_button a").click(function(){
-		if($(this).text()=="시작") 
-			sendStart();
-		else if($(this).text()=="준비")
+		/*if($(this).text()=="시작") 
+			sendStart();*/
+		if($(this).text()=="준비")
 			sendReady();
 		else if($(this).text()=="준비취소") 
 			sendUnready();
@@ -311,18 +300,6 @@ function initJoin(){
 		send("CHANGE_SETTING",data);
 		$("#fold a").click();
 	});
-}
-
-function showResult(list){
-	var str = "";
-	for(var a=0,loopa=list.length; a<loopa; a++){
-		str += '<div>'+
-				'<span>'+list[a].Nickname+'</span>'+
-				list[a].result+'등'+
-				'</div>';
-	}
-	$("#gamedisplay").css('display','none');
-	$("#gameResult").html(str).css('display','block');
 }
 
 function goExit(){

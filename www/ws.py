@@ -6,6 +6,7 @@ from django.core.urlresolvers import reverse
 from django.views.decorators.csrf import csrf_exempt
 from www.models import *
 from www.functions import *
+from www.game import *
 from www.room import gameOptionToText
 import gevent
 import ast
@@ -21,7 +22,7 @@ def sendToAll(user,msg):
 		for member in members:
 			if int(member.sockID) == sockID:
 				socket.send(msg)
-	print 'SendToALL : ' , msg #status message
+	print 'sendToALL : ' , msg #status message
 
 def proc_login(user , data , request):
 	#make return message
@@ -112,11 +113,31 @@ def proc_unready(user , data , request):
 	
 	#make return message about ready command
 	ret = {'cmd':'OK','data':''}
-	ret = json.dumps(ret)	
+	ret = json.dumps(ret)
 	return ret
 
 
 def proc_start(user , data , request):
+	conn_user = MemberInRoom.objects.get(userID = user)
+	room_seq = conn_user.room_seq
+
+	#get members who are not ready
+	unready = MemberInRoom.objects.filter(room_seq = room_seq , ready = 'W').exclude(userID = user)
+
+	#if unready member(s) exist
+	if unready.count() > 0:
+		#make unready member list
+		data = []
+		for mem in unready:
+			if not mem.userID == user:
+				nickname = Member.objects.get(userID = mem.userID).nickname #get nickname of unready member
+				data.append(nickname) #append nickname to list
+
+		#send unready member list to owner
+		ret = {'cmd':'WAIT','data':data}
+		ret = json.dumps(ret)
+		return ret
+
 	msg = {'cmd':'START','data':''}
 	msg = json.dumps(msg)
 	sendToAll(user , msg)
@@ -193,9 +214,8 @@ def proc_quit(user , data , request):
 	return
 
 
-def proc_change_setting  (user , data , request):
+def proc_change_setting(user , data , request):
 	#change room data
-	pdb.set_trace()
 	room_seq = MemberInRoom.objects.get(userID = user).room_seq
 	room = Room.objects.get(seq = room_seq)
 	room.gametype  = data['gametype']
@@ -211,6 +231,15 @@ def proc_change_setting  (user , data , request):
 	sendToAll(user , msg)
 	return
 
+def proc_game(user , data , request):
+	command = data['cmd']#get command
+	data = data['data'] #get data
+
+	#game process
+	msg_ret = game_process[command](user , data , request)
+	
+	sendToAll(user,msg_ret['msg'])
+	return msg_ret
 
 process = {
 	'LOGIN' 			: proc_login ,
@@ -221,70 +250,73 @@ process = {
 	'UNREADY' 			: proc_unready ,
 	'START' 			: proc_start ,
 	'KICK' 				: proc_kick ,
+	'CHANGE_SETTING' 	: proc_change_setting ,
 	'QUIT' 				: proc_quit ,
-	'CHANGE_SETTING' 	: proc_change_setting  
+	'GAMECMD'			: proc_game 
 }
 
 def webSocket(request,room_seq):
-	#check session (check user's login)		
+	#check session (check user's login)
 	if not checkSession(request):
 		return HttpResponse("false")
-		
-	if request.environ.get('wsgi.websocket'):
-		#print socket list and check disconnected socket
+	
+	if not request.environ.get('wsgi.websocket'):
+		return
+
+	#print socket list and check disconnected socket
+	for index in range(len(socket_list)):
+		try:
+			socket_list[index].send(json.dumps({'cmd':'OK','data':''}))
+		except:
+			socket_list.pop(index)
+	
+	#get socket meta data
+	socket = request.META['wsgi.websocket']
+	request.session['sockID'] = `id(socket)`
+
+	#add socket to socket list
+	socket_list.append(socket)
+
+	#make MemberInRoom data		
+	userID = request.session['userID']
+	if MemberInRoom.objects.filter(userID = userID).count():
+		conn_user = MemberInRoom.objects.get(userID = userID)
+	else:
+		conn_user = MemberInRoom()
+	conn_user.userID = userID
+	conn_user.room_seq = room_seq
+	conn_user.sockID = `id(socket)`
+	conn_user.save()
+	
+	print 'Connect :' , request.session['userID'] , `id(socket)`
+	
+	'''
+	print '--Socket ID list--'
 		for index in range(len(socket_list)):
-			try:
-				socket_list[index].send(json.dumps({'cmd':'OK','data':''}))
-			except:
-				socket_list.pop(index)
-		
-		#get socket meta data
-		socket = request.META['wsgi.websocket']
-		request.session['sockID'] = `id(socket)`
+				print index , MemberInRoom.objects.get(sockID = `id(socket_list[index])`).userID ,
+				print `id(socket_list[index])`
+	'''
+	
+	#listen socket's sending data
+	while True:
+		msg = socket.receive()#receive data
+		userID = request.session['userID']#userID
 
-		#add socket to socket list
-		socket_list.append(socket)
+		msg = eval(msg) #separate data
+		command = msg.get('cmd')#get command
+		data = msg.get('data')#get data
 
-		#make MemberInRoom data		
-		userID = request.session['userID']
-		if MemberInRoom.objects.filter(userID = userID).count():
-			conn_user = MemberInRoom.objects.get(userID = userID)
-		else:
-			conn_user = MemberInRoom()
-		conn_user.userID = userID
-		conn_user.room_seq = room_seq
-		conn_user.sockID = `id(socket)`
-		conn_user.save()
-		
-		print 'Connect :' , request.session['userID'] , `id(socket)`
-		
-		'''
-		print '--Socket ID list--'
-			for index in range(len(socket_list)):
-					print index , MemberInRoom.objects.get(sockID = `id(socket_list[index])`).userID ,
-					print `id(socket_list[index])`
-		'''
-		
-		#listen socket's sending data
-		while True:
-			msg = socket.receive()#receive data
-			userID = request.session['userID']#userID
-
-			msg = eval(msg) #separate data
-			command = msg.get('cmd')#get command
-			data = msg.get('data')#get data
-
-			#message
-			print 'Recv :' , userID , msg
-		
-			#excute command
-			try:
-				cmd = process[command](userID , data , request)
-				socket.send(cmd)
-				print 'Send :' , cmd
-			except :
-				print 'Send : No'
-				continue
+		#message
+		print 'Recv :' , userID , msg
+	
+		#excute command
+		try:
+			cmd = process[command](userID , data , request)
+			socket.send(cmd)
+			print 'Send :' , cmd
+		except :
+			print 'Send : No'
+			continue
 	
 	return HttpResponse("false")
 

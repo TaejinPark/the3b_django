@@ -43,7 +43,8 @@ class Result(models.Model):#Result of game db table
 
 	userID 		= models.CharField(max_length=80) #user id 
 	gametype 	= models.CharField(max_length=2,choices=GAME_TYPE,default=u'B')
-	result 		= models.CharField(max_length=2,choices=OUTCOME,default=u'W');
+	gameoption 	= models.TextField(null=True,blank=True) # game option
+	result 		= models.CharField(max_length=2,choices=OUTCOME,default=u'W')
 	time 		= models.DateTimeField(auto_now_add=True,auto_now=True)
 
 	def serialize(self):
@@ -51,6 +52,7 @@ class Result(models.Model):#Result of game db table
 			'type' 		: type(self) ,
 			'userID' 	: self.userID ,
 			'gametype' 	: self.gametype ,
+			'gameoption': self.gameoption ,
 			'result' 	: self.result ,
 			'time' 		: self.time
 		}

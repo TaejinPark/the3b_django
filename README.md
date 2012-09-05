@@ -12,5 +12,6 @@ OS : Mac OSX 10.8 Mountain Lion
 Language : Python , Javascript , HTML , CSS
 
 Framework
+
 Server : Python - Django
 Client : Javascript - Jquery & Jquery Mobile

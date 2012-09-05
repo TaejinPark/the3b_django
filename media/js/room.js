@@ -96,6 +96,12 @@ function viewPlay(){
 	$("#chat").css('display','none');
 	$("#participant_list").css('display','none');
 	$("#gamedisplay").css('display','block');
+	switch(gametype){
+		case "B" : $("#bingo").css('display','block'); break;
+		case "D" : $("#dice").css('display','block'); break;
+		case "L" : $("#ladder").css('display','block'); break;
+		case "P" : $("#pirate").css('display','block'); break;
+	}
 }
 
 function viewChat(){
@@ -121,21 +127,14 @@ function view_config(id){
 	$("#room_config").css("display" , "none");
 	if(id != 'none')
 		$("#"+id).css("display" , "block");
-	
-	if(id == "room_config"){
-		
-		viewGameOption(gametype)
-	}
 }
 
-function viewGameOption(value){ // view game option 
+function viewGameOption(value){ // view game option
 	$("#game_B").css("display","none");
 	$("#game_D").css("display","none");
 	$("#game_L").css("display","none");
 	$("#game_P").css("display","none");
 	$("#game_"+value).css("display","block");
-	$('#gametype').val(value)
-	gametype = value ;
 }
 
 function changeLadderOption(){

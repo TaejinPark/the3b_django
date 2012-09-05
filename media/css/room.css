@@ -70,7 +70,11 @@ body {overflow-y: hidden;}
 #remaintime				{text-align: center;}
 
 
-
+/*game display*/
+#dice 		{display: none;}
+#ladder		{display: none;}
+#pirate		{display: none;}
+#bingo 		{display: none;}
 /*dice css*/
 #dice_result {display: none ;}
 

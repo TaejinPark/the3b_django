@@ -6,7 +6,6 @@ var bingoLine = 0;
 var currentBingo = 0;
 
 function startBingo(){
-	play = true;
 	viewPlay();
 	$("#bingoTable a").click(insertBingo);
 	$("#currentSelect").change(function(){
@@ -188,15 +187,7 @@ function showMyTurn(){
 	currentSelectTime2 = 0;
 	$("#remaintime").css('display','block');
 	$("#remaintime span").text(15);
-	interval2 = setInterval(showTurnRemainTime,1000);
-}
-
-function showTurnRemainTime(){
-	$("#remaintime span").text(15 - ++currentSelectTime2);
-	if(currentSelectTime2>=15) {
-		clearInterval(interval2);
-		sendSelectNumber();
-	}
+	startRemainTimeCount(1000)
 }
 
 function markSelect(data){

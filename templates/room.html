@@ -10,7 +10,9 @@
 		<script src ="/media/js/jquery/jquery.mobile-1.1.0.min.js"></script>
 		<script src ="/media/js/websocket.js"></script>
 		<script src ="/media/js/room.js"></script>
+		<script src ="/media/js/game.js"></script>
 		<script src ="/media/js/bingo.js"></script>
+		<script src ="/media/js/dice.js"></script>
 		<link 	href="/media/css/room.css" rel="stylesheet" >
 		<script type="text/javascript">
 		
@@ -31,7 +33,7 @@
 						init(); // websocket connection
 					}
 				});
-				viewGameOption("{{gametype_letter}}");
+				viewGameOption("B");
 				changeLadderOption()
 				$('#debug input').keypress(function(e){
 					if(e.keyCode==13) sendDebug();
@@ -41,7 +43,7 @@
 			});
 
 			window.onbeforeunload=function(){
-				goExit();
+				//goExit();
 			};
 
 		</script>
@@ -73,7 +75,7 @@
 					<span id="maxUser">{{maxuser}}</span>
 				</div>
 				<div>게임 종류 : 
-					<span>
+					<span id="gameType">
 						{{gametype_text}}
 					</span>
 				</div>
@@ -130,7 +132,7 @@
 			</div>
 			<!-- /room config -->
 
-			<div id="chat" style="display: none;">
+			<div id="chat">
 			</div>
 			<div id="participant_list">
 				<p>참가자</p>
@@ -160,34 +162,31 @@
 						</canvas>
 					</center>
 					<div id="cast_dice">
-						<a data-role="button" data-theme="b" onclick="draw_dice()">던지기</a>
-					</div>
-					<div id="dice_result">
-						<a data-role='button' data-theme='b'>결과 확인</a>
+						<a data-role="button" data-theme="b">던지기</a>
 					</div>
 				</div>
 				<!-- /dice game-->
 
 				<!-- pirate game -->
-					<div id="pirate">
-						<canvas>
-							this browser is not support canvas element.<br>
-							이 브라우저는 캔바스를 지원하지 않습니다.
-						</canvas>
-					</div>
-				<!-- pirate game -->
-
-				<!-- /ladder game-->
-					사다리 타기
+				<div id="pirate">
 					<canvas>
 						this browser is not support canvas element.<br>
 						이 브라우저는 캔바스를 지원하지 않습니다.
 					</canvas>
+				</div>
+				<!-- pirate game -->
+
+				<!-- /ladder game-->
+				<div id="ladder">
+					<canvas>
+						this browser is not support canvas element.<br>
+						이 브라우저는 캔바스를 지원하지 않습니다.
+					</canvas>
+				</div>
 				<!-- /ladder game-->
 
 				<!-- /bingo game-->
 				<div id="bingo">
-					
 					<table id="bingoTable">
 						<tr>
 							<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
@@ -225,7 +224,6 @@
 							<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
 						</tr>
 					</table>
-					<div id="remaintime">남은 시간 : <span>25</span> 초 </div>
 					<div>	
 						<div>미 선택 <div id="bingoUnselect"></div> </div><!-- 숫자 선택을 모두 하지 않고 완료시 경우 미 선택 숫자 표시-->
 						<br>
@@ -238,6 +236,7 @@
 					</div>
 				</div>
 				<!-- /bingo game -->
+				<div id="remaintime">남은 시간 : <span></span> 초 </div>
 			</div>
 			<!-- /game display-->
 			<div id="gameResult">

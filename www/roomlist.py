@@ -80,9 +80,8 @@ def getUserInfo(request):
 	all_game_lose= diceLose + bingoLose + ladderLose + pirateWin	
 
 	#make json data
-	rooms_json = '['
-	rooms_json += json.dumps( 
-		{'statusUserID'  : userID ,
+	userinfo = json.dumps( 
+		[{'statusUserID'  : userID ,
 		'statusNickname' : nickname,
 		'statusTotal' 	: all_game_lose + all_game_win,
 		'statusWin' 	: all_game_win,
@@ -99,10 +98,8 @@ def getUserInfo(request):
 		'pirateTotal'	: pirateWin + pirateLose ,
 		'pirateWin'		: pirateWin,
 		'pirateLose'	: pirateLose
-		}) + ','
-	rooms_json += ']'
-
-	return HttpResponse(rooms_json)
+		}])
+	return HttpResponse(userinfo)
 
 
 
@@ -197,10 +194,9 @@ def getRoomListToJson(request):
 			end += start
 
 		#make json
-		rooms_json = '['
+		rooms_json = []
 		for room in roomlist[start:end] :
-			rooms_json += json.dumps( 
-			{'room_seq'	:room.seq,
+			rooms_json.append({'room_seq'	:room.seq,
 			'name'		: room.name,
 			'maxuser'	: room.maxuser,
 			'participant':room.getCurUserNumber(),
@@ -212,8 +208,8 @@ def getRoomListToJson(request):
 			'password'	: room.password,
 			'gameoption': room.gameoption,
 			'start'		: room.start,
-			}) + ','
-		rooms_json += ']'
+			})
+		rooms_json = json.dumps(rooms_json)
 
 	return HttpResponse(rooms_json)
 
