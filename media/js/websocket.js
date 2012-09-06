@@ -47,10 +47,13 @@ function trim(str) { return str.replace(/^\s\s*/, '').replace(/\s\s*$/, ''); }
 String.prototype.trim = function() { return this.replace(/^\s\s*/, '').replace(/\s\s*$/, ''); }
 
 function process(msg){
-	if(userid == owner)
+	if(userid == owner){
 		$("#start_button").css('display','block');
+		$("#config_change").css('display','block');
+	}
 	else{
 		$("#ready_button").css('display','block');
+
 	}
 
 	if(msg.substr(0,1)!="{") msg = msg.substr(1);
@@ -79,6 +82,7 @@ function process(msg){
 		case "CHANGE_SETTING": 
 			chatAppend("방 설정이 다음과 같이 변경되었습니다.");
 			chatAppend("최대 인원: "+data.data.maxuser+"명 , " + data.data.gameoption_text);
+			gametype = data.data.gametype
 			$("#maxUsers").text(data.data.maxuser); 
 			$("#gameOption").text(data.data.gameoption_text);
 			$("#gameType").text(data.data.gametype_text);
@@ -146,12 +150,20 @@ function process(msg){
 			}
 			break;
 
-		case "GAMECMD": 
+		case "GAMECMD":
 			game_process(data.data);
 			break;
 
-		case "INSTANCE_EXIT": 
-			setTimeout(goExit,10000); 
+		case "RESULT":
+			game_process(data.data);
+			break;		
+
+		case "BOOM":
+			$('gameResult')
+			$('#gameResult center').html($('#gameResult center').html()+'일회성 방이므로 자동으로 종료됩니다.')
+			setTimeout(function(){
+				location.href = /roomlist/;
+			},10000);
 			break;
 	}
 }
@@ -314,10 +326,11 @@ function gameStartTimeCount(){
 	chatAppend("게임시작 까지 "+startcount+"초 남았습니다.")
 	gamestart_interval = setInterval(startCount,1000);
 }
-
 function startCount(){
 	startcount -= 1 ;
 	chatAppend("게임시작 까지 "+startcount+"초 남았습니다.")
-	if(startcount < 0)
+	if(startcount < 0){
 		clearInterval(gamestart_interval);
+		view_folding('unfold');
+	}
 }

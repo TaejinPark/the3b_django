@@ -29,7 +29,6 @@ def proc_game_dice_result(user , data , request):
 		#delete temporary result from temporary result list
 		temp_room_result.pop(room_seq)
 
-
 		#sort result
 		result_list.sort(cmp = dice_cmp)
 		
@@ -70,12 +69,12 @@ def proc_game_dice_result(user , data , request):
 			#save to database
 			result.save()
 
-		msg = {'cmd':'GAMECMD','data':{'cmd':'DICE_RESULT','data':result_list}}
-		ret_msg = {'ret':'','msg':json.dumps(msg)}
+		msg = {'cmd':'RESULT','data':{'cmd':'DICE_RESULT','data':result_list}}
+		ret = {'cmd':'','data':''}
+		ret_msg = {'ret':ret,'msg':msg}
 		return ret_msg
 
 game_process = {
 	'DICE_RESULT' : proc_game_dice_result
 }
-
 

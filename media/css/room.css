@@ -18,7 +18,7 @@ body {overflow-y: hidden;}
 #unfold					{position:absolute; top:0px; right:0px; margin-right:10px;}
 #fold					{display:none; position:absolute; top:0px; right:0px; margin-right:10px;}
 
-#config_change			{margin:10px 20px;}
+#config_change			{margin:10px 20px;display:none;}
 #config_confirm			{margin:10px 20px;}
 
 

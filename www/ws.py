@@ -186,15 +186,16 @@ def proc_quit(user , data , request):
 	#delete socket from socket list
 	conn_user = MemberInRoom.objects.get(userID = user)
 	room_seq = conn_user.room_seq
+
+	#delete MemberInRoom data
+	conn_user.delete()
+	
+	#remove socket from socket list
 	for index in range(len(socket_list)):
 		if int(conn_user.sockID) == int(`id(socket_list[index])`):
 			socket_list.pop(index)
 	
-	#delete MemberInRoom data
-	conn_user.delete()
-
 	room = Room.objects.get(seq = room_seq)	
-
 	if user == room.owner:
 		if room.getCurUserNumber() == 0:
 			#destroy the room
@@ -222,14 +223,37 @@ def proc_change_setting(user , data , request):
 	room.maxuser = data['maxuser']
 	room.gameoption = str(data['gameoption'])
 	room.save()
-
-	gameoption_text = gameOptionToText(room)
-	data.update({'gameoption_text':gameoption_text})
+	data.update({'gametype_text':room.get_gametype_display()})
+	data.update({'gameoption_text':gameOptionToText(room)})
 	#send changed room status to all user in same room
 	msg = {'cmd':'CHANGE_SETTING','data':data}
 	msg = json.dumps(msg)
 	sendToAll(user , msg)
 	return
+
+
+def checkInstanceRoom(user):
+	room_seq = MemberInRoom.objects.get(userID = user).room_seq
+	room =Room.objects.get(seq = room_seq)
+	#check instance room
+	if room.roomtype == 'I':
+		#if room is instance , destroy the room
+		msg = {'cmd':'BOOM','data':''}
+		msg = json.dumps(msg)
+		sendToAll(user,msg)
+		boomTheRoom(room_seq)
+
+def boomTheRoom(room_seq):
+	memlist = MemberInRoom.objects.filter(room_seq = room_seq)
+	
+	for mem in memlist:
+		for index in range(len(socket_list)):
+			if int(mem.sockID) == int(`id(socket_list[index])`):
+				socket_list.pop(index)
+		mem.delete()
+
+	room = Room.objects.get(seq = room_seq)
+	room.delete()
 
 def proc_game(user , data , request):
 	command = data['cmd']#get command
@@ -237,8 +261,12 @@ def proc_game(user , data , request):
 
 	#game process
 	msg_ret = game_process[command](user , data , request)
-	sendToAll(user,msg_ret['msg'])
-	return msg_ret
+	sendToAll(user,json.dumps(msg_ret['msg']))
+	
+	#check instance room when cmd is 'result'
+	if msg_ret['msg']['cmd'] == 'RESULT':
+		checkInstanceRoom(user)
+	return json.dumps(msg_ret['ret'])
 
 process = {
 	'LOGIN' 			: proc_login ,
@@ -313,8 +341,9 @@ def webSocket(request,room_seq):
 			cmd = process[command](userID , data , request)
 			socket.send(cmd)
 			print 'Send :' , cmd
+
 		except :
-			print 'Send : No'
+			print 'Send : - '
 			continue
 	
 	return HttpResponse("false")

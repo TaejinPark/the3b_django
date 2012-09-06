@@ -22,6 +22,7 @@ def index(request , room_seq):
 	info = {
 		'name'		: room.name , 
 		'room_seq'	: room_seq , 
+		'roomtype' 	: room.get_roomtype_display(), 
 		'userID'	: user.userID ,
 		'nickname'	: user.nickname ,
 		'owner'		: room.owner ,
