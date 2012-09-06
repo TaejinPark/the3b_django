@@ -45,6 +45,10 @@ body {overflow-y: hidden;}
 #exit_button			{margin:5px 5px;float:right;}
 #divider				{clear:both;}
 
+#start_button {display:none;}
+#ready_button {display:none;}
+#unready_button {display:none;}
+
 #participant_list a		{padding:0px; margin:5px;}
 #participant_list spand	{padding:0px; margin:5px;}
 #participant_list a	span{padding:2px;}

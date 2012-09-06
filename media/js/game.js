@@ -6,6 +6,7 @@ function startTimeCount(time_to_count){
 	$("#remaintime").css('display','block');
 	remain_time = time_to_count ; 
 	remain_time_interval = setInterval(showRemainTime,1000);
+	$("#remaintime span").text(remain_time);
 }
 
 function clearTimeCount(){
@@ -14,10 +15,10 @@ function clearTimeCount(){
 }
 
 function showRemainTime(){
+	remain_time -= 1
 	$("#remaintime span").text(remain_time);
 	if(remain_time <= 0)
 		clearTimeCount();
-	remain_time -= 1
 }
 /* time count function */
 
@@ -45,7 +46,6 @@ function showResult(list){
 function game_process(data){
 	switch(data.cmd){
 		case "DICE_RESULT":
-				startTimeCount(5);
 				showResult(data.data)
 			break;
 

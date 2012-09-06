@@ -75,11 +75,6 @@ function resizeContent()
 	$("#chat_input").css("width" , browserWidth - $("#chat_send").width() - 30);
 	
 	$(".turnuser").css("width", browserWidth / 2 - 24);
-	
-	var ctx = document.getElementById("dice_canvas").getContext("2d");
-	ctx.fillStyle = "white";
-	ctx.font = "italic 20pt Calibri" ;
-	ctx.fillText("Let's Dice!!!",80,80);
 }
 
 function view_folding(flag){

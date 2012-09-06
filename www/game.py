@@ -54,16 +54,21 @@ def proc_game_dice_result(user , data , request):
 			
 			if winner_value == iter_user_value:
 				result.result = ranking
-				
 			else:
 				result.result = next_ranking
 				ranking += 1
 
 			next_ranking += 1
+
 			result_list[index] = {'nickname':result_list[index].keys()[0],'value':iter_user_value,'ranking':result.result}
 			
+			if ranking == 1 :
+				result.result = 'W'
+			else:
+				result.result = 'L'
+
 			#save to database
-			#result.save()
+			result.save()
 
 		msg = {'cmd':'GAMECMD','data':{'cmd':'DICE_RESULT','data':result_list}}
 		ret_msg = {'ret':'','msg':json.dumps(msg)}

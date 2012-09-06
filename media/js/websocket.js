@@ -47,11 +47,10 @@ function trim(str) { return str.replace(/^\s\s*/, '').replace(/\s\s*$/, ''); }
 String.prototype.trim = function() { return this.replace(/^\s\s*/, '').replace(/\s\s*$/, ''); }
 
 function process(msg){
-	if(userid != owner)
-		$("#start_button").css('display','none');
+	if(userid == owner)
+		$("#start_button").css('display','block');
 	else{
-		$("#ready_button").css('display','none');
-		$("#unready_button").css('display','none');
+		$("#ready_button").css('display','block');
 	}
 
 	if(msg.substr(0,1)!="{") msg = msg.substr(1);
@@ -113,12 +112,13 @@ function process(msg){
 			break; 
 		case "START": 
 			chatAppend("게임이 곧 시작됩니다. 준비하세요!");
+			gameStartTimeCount();
 			play = true ;
 			switch(gametype){
-				case "B" : setTimeout(startBingo, 4000); break;
-				case "D" : setTimeout(startDice , 0000); break;
-				case "L" : setTimeout(startLadder,4000); break;
-				case "P" : setTimeout(startPirate,4000); break;
+				case "B" : setTimeout(startBingo, 5000); break;
+				case "D" : setTimeout(startDice , 5000); break;
+				case "L" : setTimeout(startLadder,5000); break;
+				case "P" : setTimeout(startPirate,5000); break;
 			}
 			break;
 		
@@ -268,8 +268,6 @@ function initJoin(){
 		if(e.keyCode==13) sendChat();
 	});
 	$("#play_button a").click(function(){
-		/*if($(this).text()=="시작") 
-			sendStart();*/
 		if($(this).text()=="준비")
 			sendReady();
 		else if($(this).text()=="준비취소") 
@@ -306,4 +304,20 @@ function goExit(){
 	sendCmd = "QUIT";
 	send("QUIT",{});
 	//setTimeout(function(){location.href="/roomlist/";},1000);
+}
+
+var startcount;
+var gamestart_interval ;
+
+function gameStartTimeCount(){
+	startcount = 5 ;
+	chatAppend("게임시작 까지 "+startcount+"초 남았습니다.")
+	gamestart_interval = setInterval(startCount,1000);
+}
+
+function startCount(){
+	startcount -= 1 ;
+	chatAppend("게임시작 까지 "+startcount+"초 남았습니다.")
+	if(startcount < 0)
+		clearInterval(gamestart_interval);
 }

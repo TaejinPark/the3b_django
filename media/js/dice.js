@@ -9,18 +9,32 @@ var square_distance ;		//the distance between squares
 var dot_radius ; //dice dot radius
 var ctx 		//canvas context	
 var i ;
+var dice_num = Array() ;	//dice number 1~6
+var result_interval ;
 function startDice()
 {
 	viewPlay();
-	$("#cast_dice a").click(draw_dice);
-	startTimeCount(0);//10
-	setTimeout(draw_dice,0);//11000
+	$("#cast_dice a").click(function(){
+		sendDiceResult();
+	});
+	draw_dice()
+	startTimeCount(10);
+	setTimeout(draw_dice,10000);
+	setTimeout(sendDiceResult,10000);
 }
 
-function sendDiceResult(dice_result){
-	var data = {};
-	data = {cmd:"DICE_RESULT",data:dice_result};
-	send("GAMECMD",data);
+function sendDiceResult(){
+	clearInterval(rolling_interval);
+	clearTimeCount();
+	var dice_result = dice_num[0] + dice_num[1] + dice_num[2] ;
+	var innerhtml = "<center>당신의 주사위의 합은 " + dice_result + " 입니다.<br/>서버로 부터 결과를 기다리고 있습니다.</center>";
+	$("#cast_dice").html(innerhtml);
+	$("#dice_result").css("display","block");
+	setTimeout(function(){
+		var data = {};
+		data = {cmd:"DICE_RESULT",data:dice_result};
+		send("GAMECMD",data);
+	},1000)
 }
 
 function draw_dice()
@@ -56,21 +70,20 @@ function draw_dice()
 	ctx.clearRect(0,0,canvas_width,canvas_height); // clear canvas	
 	ctx.lineWidth= 5 ;
 	
-	var dice_num = Array() ;	//dice number 1~6
+	rolling_interval = setInterval(roll_dice,100);
+}
 
+function roll_dice()
+{
+	ctx.clearRect(0,0,canvas_width,canvas_height); // clear canvas	
 	for(  i = 0 ; i < 3 ; i++)
 		dice_num[i] = Math.floor(Math.random() * 6 ) + 1; // get random number of three dices
 	
 	draw_sqrt_top_mid(dice_num[0]);
 	draw_sqrt_btm_left(dice_num[1]);
 	draw_sqrt_btm_right(dice_num[2]);
-	var dice_result = dice_num[0] + dice_num[1] + dice_num[2] ;
-	var innerhtml = "<center>당신의 주사위의 합은 " + dice_result + " 입니다.<br/>서버로 부터 결과를 기다리고 있습니다.</center>";
-	document.getElementById("cast_dice").innerHTML = innerhtml ;
-	$("#dice_result").css("display","block")
-	clearTimeCount();
-	sendDiceResult(dice_result);
 }
+
 function draw_sqrt_top_mid(dice_num)
 {
 	var X = canvas_width / 2 ;
