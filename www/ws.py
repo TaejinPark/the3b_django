@@ -190,12 +190,8 @@ def proc_quit(user , data , request):
 	#delete MemberInRoom data
 	conn_user.delete()
 	
-	#remove socket from socket list
-	for index in range(len(socket_list)):
-		if int(conn_user.sockID) == int(`id(socket_list[index])`):
-			socket_list.pop(index)
-	
-	room = Room.objects.get(seq = room_seq)	
+	room = Room.objects.get(seq = room_seq)
+	#change owner
 	if user == room.owner:
 		if room.getCurUserNumber() == 0:
 			#destroy the room
@@ -211,6 +207,11 @@ def proc_quit(user , data , request):
 			msg = {'cmd':'CHANGE_OWNER','data':data}
 			msg = json.dumps(msg)
 			sendToAll(new_owner.userID , msg)
+
+	#remove socket from socket list
+	for index in range(len(socket_list)):
+		if int(conn_user.sockID) == int(`id(socket_list[index])`):
+			socket_list.pop(index)
 
 	return
 
@@ -242,6 +243,16 @@ def checkInstanceRoom(user):
 		msg = json.dumps(msg)
 		sendToAll(user,msg)
 		boomTheRoom(room_seq)
+	else:
+		msg = {'cmd':'REGAME','data':''}
+		msg = json.dumps(msg)
+		sendToAll(user,msg)
+
+	memlist = MemberInRoom.objects.filter(room_seq = room_seq)
+	
+	for mem in memlist:
+		mem.ready = 'W'
+		mem.save()
 
 def boomTheRoom(room_seq):
 	memlist = MemberInRoom.objects.filter(room_seq = room_seq)
@@ -266,6 +277,7 @@ def proc_game(user , data , request):
 	#check instance room when cmd is 'result'
 	if msg_ret['msg']['cmd'] == 'RESULT':
 		checkInstanceRoom(user)
+		
 	return json.dumps(msg_ret['ret'])
 
 process = {

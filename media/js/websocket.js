@@ -20,7 +20,8 @@ function init(){
     	process(msg.data); 
     }
     socket.onclose	= function(msg){
-    	log("Disconnected - status "+this.readyState); 
+    	log("Disconnected - status "+this.readyState);
+    	location.reload();
     };
   }
   catch(ex){ log(ex); }
@@ -47,15 +48,6 @@ function trim(str) { return str.replace(/^\s\s*/, '').replace(/\s\s*$/, ''); }
 String.prototype.trim = function() { return this.replace(/^\s\s*/, '').replace(/\s\s*$/, ''); }
 
 function process(msg){
-	if(userid == owner){
-		$("#start_button").css('display','block');
-		$("#config_change").css('display','block');
-	}
-	else{
-		$("#ready_button").css('display','block');
-
-	}
-
 	if(msg.substr(0,1)!="{") msg = msg.substr(1);
 	if(msg.substr(msg.length-1,1)!="}") msg = msg.substr(0,msg.length-1);
 	try{ 
@@ -70,7 +62,7 @@ function process(msg){
 			makeUserList(data.data); break;
 		
 		case "CHAT": 
-			chatAppend(data.data.nickname+": "+data.data.Message);break;
+			chatAppend(data.data.nickname+" : "+data.data.Message);break;
 		
 		case "KICK": 
 			chatAppend('['+data.data.nickname+"] 님이 강퇴 당하셨습니다.");
@@ -91,20 +83,25 @@ function process(msg){
 			break;
 		
 		case "CHANGE_OWNER": 
-			owner = data.data.userID; chatAppend('['+data.data.nickname+'] 님이 방장이 되셨습니다.');
-			if(owner == userid)
+			owner = data.data.userID;
+			chatAppend('['+data.data.nickname+'] 님이 방장이 되셨습니다.');
+			if(owner == userid){
 				$('#start_button').css('display','block');
-			sendCmd="USERLIST"; send("USERLIST",{});
+				$("#ready_button").css('display','none'); 
+				$("#unready_button").css('display','none'); 
+			}
+			sendCmd="USERLIST"; 
+			send("USERLIST",{});
 			break;
 		
 		case "READY": 
 			chatAppend('['+data.data.nickname+"] 님이 준비가 완료되었습니다.");
-			$("#ready_flag_"+data.data.nickname).text("AlReady | ");
+			$('.nick_'+data.data.nickname).buttonMarkup({theme: 'b'});
 			break;
 		
 		case "UNREADY": 
-			chatAppend('['+data.data.nickname+"] 님이 준비를 취소 하였습니다."); 
-			$("#ready_flag_"+data.data.nickname).text("UnReady | ");
+			chatAppend('['+data.data.nickname+"] 님이 준비를 취소 하였습니다.");
+			$('.nick_'+data.data.nickname).buttonMarkup({theme: 'e'});
 			break;
 		
 		case "WAIT":
@@ -134,19 +131,24 @@ function process(msg){
 		case "OK":
 			switch(sendCmd){
 				case "LOGIN": 
-					sendJoin(); break;
+					sendJoin(); 
+					break;
+		
 				case "JOIN": 
 					initJoin(); 
 					chatAppend("방에 접속하였습니다."); 
-					sendUserList(); break;
+					sendUserList();
+					break;
 				
-				case "READY": 	$("#ready_button").css('display','none'); 
-								$("#unready_button").css('display','block'); 
-								break;
+				case "READY": 	
+					$("#ready_button").css('display','none'); 
+					$("#unready_button").css('display','block');
+					break;
 								
-				case "UNREADY": $("#ready_button").css('display','block'); 
-								$("#unready_button").css('display','none'); 
-								break;
+				case "UNREADY": 
+					$("#ready_button").css('display','block'); 
+					$("#unready_button").css('display','none'); 
+					break;
 			}
 			break;
 
@@ -156,14 +158,31 @@ function process(msg){
 
 		case "RESULT":
 			game_process(data.data);
-			break;		
+			break;
+
+		case "REGAME":
+			play = false;
+			$('#gameResult center').html($('#gameResult center').html()+'잠시뒤 결과 화면이 사라지고 , 채팅화면이 나타납니다.')
+			setTimeout(function(){
+				$("#gamedisplay").css('display','none');
+				$("#gameResult").css('display','none');
+				$("#chat").css('display','block');
+				$("#chat").text("대화 목록이 초기화 되었습니다.");
+				if(userid == owner){
+					$("#start_button").css('display','block');
+					$("#config_change").css('display','block');
+				}
+				else{
+					$("#ready_button").css('display','block');
+					$("#unready_button").css('display','none');
+				}
+				sendUserList();
+			},10000);
+			break;
 
 		case "BOOM":
-			$('gameResult')
-			$('#gameResult center').html($('#gameResult center').html()+'일회성 방이므로 자동으로 종료됩니다.')
-			setTimeout(function(){
-				location.href = /roomlist/;
-			},10000);
+			$('#gameResult center').html($('#gameResult center').html()+'일회성 방이므로 잠시뒤 , 자동으로 종료됩니다.')
+			setTimeout(function(){location.href = /roomlist/;},10000);
 			break;
 	}
 }
@@ -211,32 +230,52 @@ function sendUserList(){
 
 function userAppend(a_userid,a_nickname){
 
-	var str = '<div class="user_'+a_userid+'">' + 
-				'<a class="nick_'+a_nickname+'" type="button" data-inline="true">'+(owner==a_userid?'방장':'강퇴')+'</a>' ;
-		str += (a_userid == owner ) ? '<span id="ready_flag_'+a_nickname+'">Host | </span>' : '<span id="ready_flag_'+a_nickname+'">UnReady | </span>' ;
-		str +='<span>'+a_nickname+'</span>'+
+	var str ='<div class="user_'+a_userid+'">' ;
+		if(owner == userid && owner == a_userid)
+			str +=	'<a class="host_'+a_nickname+'" type="button" data-inline="true" data-theme="e">방장';
+		else if(owner != userid && owner == a_userid)
+			str +=	'<a class="nick_'+a_nickname+'" type="button" data-inline="true" data-theme="e">시작요청';
+		else
+			str +=	'<a class="nick_'+a_nickname+'" type="button" data-inline="true" data-theme="e">준비요청';
+		str +=	'</a>' ;
+		
+		if(owner == userid && owner != a_userid)
+			str += '<a class="kick_'+a_nickname+'" type="button" data-inline="true" data-theme="e">강퇴</a>';		
+		
+		str +=	'<span>'+a_nickname+'</span>'+
 			'</div>';
 	$("#participant_list").append(str).parent().trigger("create");
-	$('#participant_list div a').unbind('click').click(function(){
-		
+	$(".nick_"+a_nickname+" span").css('width','100%').css('height','20px');
+	
+	$(".nick_"+a_nickname).unbind('click').click(function(){
+		if(userid == a_userid)
+				return;
+			sendCmd = "CHAT";
+			var data = {};
+			if(a_userid == owner)
+				data.Message = a_nickname + " 님 게임 시작 부탁드립니다.";
+			else	
+				data.Message = a_nickname + " 님 레디 부탁드립니다.";
+			send("CHAT",data);
+			return;
+	});
+
+	$(".kick_"+a_nickname).unbind('click').click(function(){
 		//can't kick the room owner
-		if($(this).text()=="방장") 
+		if(owner != userid)
 			return;
-
 		//only user can kick the other user
-		if(owner!=userid)
-			return;
-
 		var kickuser = $(this).parent().attr('class').replace("user_","");
 		if(kickuser == userid) { 
 			alert("자기 자신은 강퇴 안되요 ^^"); 
 			return; 
 		}
-
-		sendCmd = "KICK";
-		var data = {};
-		data.userID = kickuser;
-		send("KICK",data);
+		if(confirm(a_nickname+" 님을 강퇴 시키시겠습니까?")){
+			sendCmd = "KICK";
+			var data = {};
+			data.userID = kickuser;
+			send("KICK",data);
+		}	
 	});
 }
 function makeUserList(list){
@@ -276,6 +315,13 @@ function sendStart(){
 }
 
 function initJoin(){
+	if(userid == owner){
+		$("#start_button").css('display','block');
+		$("#config_change").css('display','block');
+	}
+	else{
+		$("#ready_button").css('display','block');
+	}
 	$("#msg").keypress(function(e){
 		if(e.keyCode==13) sendChat();
 	});
@@ -328,9 +374,9 @@ function gameStartTimeCount(){
 }
 function startCount(){
 	startcount -= 1 ;
-	chatAppend("게임시작 까지 "+startcount+"초 남았습니다.")
-	if(startcount < 0){
+	if(startcount <= 0){
 		clearInterval(gamestart_interval);
 		view_folding('unfold');
 	}
+	chatAppend("게임시작 까지 "+startcount+"초 남았습니다.")
 }
