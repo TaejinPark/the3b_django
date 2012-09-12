@@ -13,6 +13,7 @@
 		<script src ="/media/js/game.js"></script>
 		<script src ="/media/js/bingo.js"></script>
 		<script src ="/media/js/dice.js"></script>
+		<script src ="/media/js/pirate.js"></script>
 		<link 	href="/media/css/room.css" rel="stylesheet" >
 		<script type="text/javascript">
 		
@@ -148,7 +149,9 @@
 			<!-- /game display-->
 			<div id="gamedisplay">
 				<!-- /game message-->
-				<div id="messageWindow"></div>
+				<div id="messageWindow">
+				</div>
+				
 				<div id="turn">
 					<div class="turnuser">현재 순서 아이디</div>
 					<div><a data-role="button" data-icon="arrow-r" data-iconpos="notext" data-theme="a" data-inline="true">unfold</a></div>
@@ -172,10 +175,12 @@
 
 				<!-- pirate game -->
 				<div id="pirate">
-					<canvas>
-						this browser is not support canvas element.<br>
-						이 브라우저는 캔바스를 지원하지 않습니다.
-					</canvas>
+					<center>
+						<canvas id="pirate_canvas">
+							this browser is not support canvas element.<br>
+							이 브라우저는 캔바스를 지원하지 않습니다.
+						</canvas>
+					</center>
 				</div>
 				<!-- pirate game -->
 

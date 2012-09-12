@@ -113,13 +113,13 @@ function process(msg){
 			break; 
 		case "START": 
 			chatAppend("게임이 곧 시작됩니다. 준비하세요!");
-			gameStartTimeCount();
+			//gameStartTimeCount();
 			play = true ;
 			switch(gametype){
 				case "B" : setTimeout(startBingo, 5000); break;
 				case "D" : setTimeout(startDice , 5000); break;
 				case "L" : setTimeout(startLadder,5000); break;
-				case "P" : setTimeout(startPirate,5000); break;
+				case "P" : setTimeout(startPirate,0000); break;
 			}
 			break;
 		
@@ -361,7 +361,6 @@ function initJoin(){
 function goExit(){
 	sendCmd = "QUIT";
 	send("QUIT",{});
-	//setTimeout(function(){location.href="/roomlist/";},1000);
 }
 
 var startcount;
