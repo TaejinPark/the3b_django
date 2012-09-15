@@ -25,16 +25,19 @@ def sendToAll(user,msg):
 	print 'sendToALL : ' , msg #status message
 
 def proc_login(user , data , request):
+	#set waiting state
+	member = MemberInRoom.objects.get(userID = user)
+	member.ready = 'W'
+	member.save()
+
 	#make return message
 	ret = {'cmd':'OK','data':''}
 	ret = json.dumps(ret)	
 	return ret
 
 def proc_join(user , data , request):
-	
 	#get data if join user
 	member = Member.objects.get(userID = user)
-	
 	#set data to send message
 	data = {'userID'	: member.userID ,
 			'nickname'	: member.nickname }
@@ -138,7 +141,11 @@ def proc_start(user , data , request):
 		ret = json.dumps(ret)
 		return ret
 
-	msg = {'cmd':'START','data':''}
+	#initial game setting
+	room = Room.objects.get(seq = room_seq)
+	turn = initialGameSetting(user ,room)
+
+	msg = {'cmd':'START','data':turn}
 	msg = json.dumps(msg)
 	sendToAll(user , msg)
 	return ret
@@ -244,6 +251,9 @@ def checkInstanceRoom(user):
 		sendToAll(user,msg)
 		boomTheRoom(room_seq)
 	else:
+		for mir in MemberInRoom.objects.filter(room_seq = room_seq):
+			mir.ready = 'W'
+			mir.save()
 		msg = {'cmd':'REGAME','data':''}
 		msg = json.dumps(msg)
 		sendToAll(user,msg)

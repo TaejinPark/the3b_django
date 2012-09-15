@@ -1,8 +1,9 @@
 /* time count function */
 var remain_time = null;
 var remain_time_interval ;
-
+var callback_function ;
 function startTimeCount(time_to_count){
+	clearTimeCount();
 	$("#remaintime").css('display','block');
 	remain_time = time_to_count ; 
 	remain_time_interval = setInterval(showRemainTime,1000);
@@ -17,12 +18,16 @@ function clearTimeCount(){
 function showRemainTime(){
 	remain_time -= 1
 	$("#remaintime span").text(remain_time);
-	if(remain_time <= 0)
+	if(remain_time <= 0){
 		clearTimeCount();
+		if(typeof callback_function == "function")
+			callback_function();
+	}
 }
-/* time count function */
+
 
 function showResult(list){
+	$("#turn").css('display','none');
 	var str = '<center style="margin:10px; padding:10px;" >' ;
 	for(var a=0,loopa=list.length; a<loopa; a++){
 		if(list[a].ranking == 'W' || list[a].ranking == 1) 
@@ -42,11 +47,43 @@ function showResult(list){
 	$("#gameResult").html(str).css('display','block');
 }
 
+function showUserTurn(turn){
+	$("#turn").css('display','block');
+	$("#turn").html("<center>"+turn['prev']+"-> <strong>"+turn['curr']+"</strong> ->"+turn['next']+"</center>");
+	if(nickname == turn['curr']){
+		startTimeCount(5);
+		switch(gametype){
+			case "B" :  break;
+			case "L" :  break;
+			case "P" : 
+				callback_function = sendRandKnifeNumber;
+				$('#pirate_table').css('display','block');
+			break;
+		}
+	}
+	else{
+		switch(gametype){
+			case "B" :  break;
+			case "L" :  break;
+			case "P" : $('#pirate_table').css('display','none'); break;
+		}
+	}
+}
 
 function game_process(data){
-	switch(data.cmd){
+	callback_function = 0 ;
+	cmd = data.cmd ;
+	data = data.data ;
+	switch(cmd){
+		/* dice game cmd */
 		case "DICE_RESULT":
-				showResult(data.data)
+				showResult(data)
+			break;
+
+		/* pirate cmd */
+		case "PIRATE_KNIFE_SELECT":
+			pierceKnife(data['knifenumber']);
+			showUserTurn(data['turn'])
 			break;
 
 		case "BINGO_START": 

@@ -9,10 +9,10 @@ dict_PRIVATE_FLAG={'S':'비밀방', 'P':'공개방'}
 dict_MAX_USER	= {2:'2명', 3:'3명', 4:'4명', 5:'5명', 6:'6명', 7:'7명', 8:'8명'}
 
 
-GAME_TYPE =((u'B',u'빙고'),
-			(u'D',u'주사위'),
-			(u'P',u'해적 룰렛'),
-			(u'L',u'사다리 타기'))
+GAME_TYPE =((u'B',u'빙고'),#bingo
+			(u'D',u'주사위'),#dice
+			(u'P',u'해적 룰렛'),#pirate
+			(u'L',u'사다리 타기'))#ladder
 
 
 class Member(models.Model):# member db table
@@ -38,8 +38,8 @@ class Member(models.Model):# member db table
 		return data
 
 class Result(models.Model):#Result of game db table	
-	OUTCOME=(	(u'W',u'승리'),
-				(u'L',u'패배'))
+	OUTCOME=(	(u'W',u'승리'),#win
+				(u'L',u'패배'))#lose
 
 	userID 		= models.CharField(max_length=80) #user id 
 	gametype 	= models.CharField(max_length=2,choices=GAME_TYPE,default=u'B')
@@ -63,8 +63,8 @@ class Result(models.Model):#Result of game db table
 		return data
 
 class MemberInRoom(models.Model):
-	READY_FLAG=((u'R',u'준비'),
-				(u'W',u'대기'))
+	READY_FLAG=((u'R',u'준비'),#ready
+				(u'W',u'대기'))#wait
 
 	room_seq	= models.PositiveIntegerField()
 	userID		= models.CharField(max_length=80)
@@ -88,14 +88,14 @@ class MemberInRoom(models.Model):
 
 
 class Room(models.Model):#Game room information db table
-	ROOM_TYPE =((u'I',u'일회방'),
-				(u'N',u'일반방'))
+	ROOM_TYPE =((u'I',u'일회방'),#instance
+				(u'N',u'일반방'))#normal
 
-	START_FLAG=((u'S',u'시작'),
-				(u'W',u'대기'))
+	START_FLAG=((u'S',u'시작'),#start
+				(u'W',u'대기'))#wain
 
-	PRIVATE_FLAG=((u'S',u'비밀방'),
-				  (u'P',u'공개방'))
+	PRIVATE_FLAG=((u'S',u'비밀방'),#secret
+				  (u'P',u'공개방'))#public
 
 	MAX_USER=(	(2,'2명'),
 				(3,'3명'),

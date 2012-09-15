@@ -54,9 +54,10 @@ function process(msg){
 	var data = JSON.parse(msg);
 	} catch (ex){ log(ex); }
 	switch(data.cmd){
-		case "JOIN": 
-			chatAppend('['+data['data']['nickname']+"] 님이 참가 하셨습니다."); 
-			userAppend(data.data.userID,data.data.nickname); break;
+		case "JOIN":
+			if(nickname != data['data']['nickname'])
+				chatAppend('['+data['data']['nickname']+"] 님이 참가 하셨습니다."); 
+			break;
 			
 		case "USERLIST": 
 			makeUserList(data.data); break;
@@ -90,7 +91,7 @@ function process(msg){
 				$("#ready_button").css('display','none'); 
 				$("#unready_button").css('display','none'); 
 			}
-			sendCmd="USERLIST"; 
+			sendCmd="USERLIST";
 			send("USERLIST",{});
 			break;
 		
@@ -113,13 +114,19 @@ function process(msg){
 			break; 
 		case "START": 
 			chatAppend("게임이 곧 시작됩니다. 준비하세요!");
-			//gameStartTimeCount();
+			gameStartTimeCount();
 			play = true ;
+			$("#start_button").css('display','none');
+			$("#ready_button").css('display','none');
+			$("#unready_button").css('display','none');
 			switch(gametype){
 				case "B" : setTimeout(startBingo, 5000); break;
 				case "D" : setTimeout(startDice , 5000); break;
 				case "L" : setTimeout(startLadder,5000); break;
-				case "P" : setTimeout(startPirate,0000); break;
+				case "P" : 
+					showUserTurn(data.data);
+					setTimeout(startPirate,0000); 
+					break;
 			}
 			break;
 		
@@ -245,7 +252,6 @@ function userAppend(a_userid,a_nickname){
 		str +=	'<span>'+a_nickname+'</span>'+
 			'</div>';
 	$("#participant_list").append(str).parent().trigger("create");
-	$(".nick_"+a_nickname+" span").css('width','100%').css('height','20px');
 	
 	$(".nick_"+a_nickname).unbind('click').click(function(){
 		if(userid == a_userid)

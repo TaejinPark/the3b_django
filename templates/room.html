@@ -55,7 +55,7 @@
 	<div data-role="page" class="type-interior">
 	
 		<!-- /header -->
-		<div id="header" data-role="header" data-position="fixed" data-theme="a">
+		<div id="header" data-role="header" data-theme="a">
 			<h3 data-inline="true">{{name}}</h3>
 			<div id="unfold">
 				<a onclick="view_config('room_info'); view_folding('fold');"data-role="button" data-icon="arrow-d" data-iconpos="notext" data-theme="a">unfold</a>
@@ -152,10 +152,9 @@
 				<div id="messageWindow">
 				</div>
 				
-				<div id="turn">
-					<div class="turnuser">현재 순서 아이디</div>
-					<div><a data-role="button" data-icon="arrow-r" data-iconpos="notext" data-theme="a" data-inline="true">unfold</a></div>
-					<div class="turnuser textalignright"> 다음 순서 아이디</div>
+				<div>
+					<center id="turn">
+					</center>
 				</div>
 				<!-- /game message-->
 
@@ -180,6 +179,34 @@
 							this browser is not support canvas element.<br>
 							이 브라우저는 캔바스를 지원하지 않습니다.
 						</canvas>
+						<div>
+							<table id="pirate_table">
+								<tr>
+									<td><a data-role="button" data-mini="true" data-inline="true" data-theme="a" value="0">1</a></td>
+									<td><a data-role="button" data-mini="true" data-inline="true" data-theme="a" value="1">2</a></td>
+									<td><a data-role="button" data-mini="true" data-inline="true" data-theme="a" value="2">3</a></td>
+									<td><a data-role="button" data-mini="true" data-inline="true" data-theme="a" value="3">4</a></td>
+								</tr>
+								<tr>
+									<td><a data-role="button" data-mini="true" data-inline="true" data-theme="a" value="4">5</a></td>
+									<td><a data-role="button" data-mini="true" data-inline="true" data-theme="a" value="5">6</a></td>
+									<td><a data-role="button" data-mini="true" data-inline="true" data-theme="a" value="6">7</a></td>
+									<td><a data-role="button" data-mini="true" data-inline="true" data-theme="a" value="7">8</a></td>
+								</tr>
+								<tr>
+									<td><a data-role="button" data-mini="true" data-inline="true" data-theme="a" value="8">9</a></td>
+									<td><a data-role="button" data-mini="true" data-inline="true" data-theme="a" value="9">10</a></td>
+									<td><a data-role="button" data-mini="true" data-inline="true" data-theme="a" value="10">11</a></td>
+									<td><a data-role="button" data-mini="true" data-inline="true" data-theme="a" value="11">12</a></td>
+								</tr>
+								<tr>
+									<td><a data-role="button" data-mini="true" data-inline="true" data-theme="a" value="12">13</a></td>
+									<td><a data-role="button" data-mini="true" data-inline="true" data-theme="a" value="13">14</a></td>
+									<td><a data-role="button" data-mini="true" data-inline="true" data-theme="a" value="14">15</a></td>
+									<td><a data-role="button" data-mini="true" data-inline="true" data-theme="a" value="15">16</a></td>
+								</tr>
+							</table>
+						</div>
 					</center>
 				</div>
 				<!-- pirate game -->
@@ -254,7 +281,7 @@
 		<!-- /content -->
 		
 		<!-- /footer -->	
-		<div id="footer" data-role="footer" data-position="fixed" data-theme="a">
+		<div id="footer" data-role="footer" data-theme="a">
 			<div id="chat_input_form">
 				<div id="chat_input"><input type="text" id="msg"></div>
 				<div id="chat_send" ><a type="button">전송</a></div>

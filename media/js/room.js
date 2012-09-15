@@ -62,13 +62,15 @@ function resizeContent()
 		$("#content").css("height" , browserHeight - headerHeight - footerHeight + 65); // if browser is iphone , content height becomes more higher than PC browser
 	else // normal browser
 		$("#content").css("height" , browserHeight - headerHeight - footerHeight);
-	contentHeight = $("#content").height();
 	
-	$("#chat").css("height" , contentHeight);
+	contentHeight = $("#content").height();
 	$("#gamedisplay").css("height" , browserHeight);
+
+	$("#participant_list").css("height" , contentHeight);
 	
 	if(	$("#participant_list").height() < contentHeight)
-		$("#participant_list").css("height" , contentHeight);
+		$("#participant_list").css("height" , contentHeight - 20);
+	
 	
 	$("#chat").css("width" , browserWidth -30);
 	$("#button_list").css("width" , browserWidth-10);
