@@ -19,8 +19,8 @@ function startDice()
 	});
 	draw_dice()
 	startTimeCount(10);
-	setTimeout(draw_dice,10000);
-	setTimeout(sendDiceResult,10000);
+	setTimeout(draw_dice,30000);
+	setTimeout(sendDiceResult,30000);
 }
 
 function sendDiceResult(){

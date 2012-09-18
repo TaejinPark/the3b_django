@@ -94,11 +94,57 @@ def proc_game_pirate_knife_select(user , data , request):
 	knifenumber = data #get knife number
 	conn_user = Member.objects.get(userID = user)
 	nickname = conn_user.nickname
-	turn = turnPrevCurNext(user) #get turn
-	msg = {'cmd':'GAMECMD','data':{'cmd':'PIRATE_KNIFE_SELECT','data':{'nickname':nickname,'knifenumber':knifenumber,'turn':turn}}}
+	room_seq = MemberInRoom.objects.get(userID = user).room_seq
+	
+	
+	if pirate_pick_number[room_seq] == knifenumber:
+		msg = make_pirate_result(user,room_seq)
+	else:
+		turn = turnPrevCurNext(user) #get turn
+		msg = {'cmd':'GAMECMD','data':{'cmd':'PIRATE_KNIFE_SELECT','data':{'nickname':nickname,'knifenumber':knifenumber,'turn':turn}}}
+		
 	ret = {'cmd':'','data':''}
-	ret_msg = {'ret':ret,'msg':msg}
+	ret_msg = {'ret':ret,'msg':msg}	
 	return ret_msg
+
+def make_pirate_result(user,room_seq):
+	room = Room.objects.get(seq = room_seq)
+	user_list = MemberInRoom.objects.filter(room_seq = room_seq)
+
+	#decide result
+	result = ""
+	if room.gameoption == 'W':
+		game_result = 'L'
+	else:
+		game_result = 'W'
+
+	for users in user_list:
+		result = Result()
+		result.userID = users.userID
+		result.gametype = room.gametype
+		result.gameoption = room.gameoption
+		result.result = game_result
+		result.save()
+
+	
+	result = Result()
+	result.userID = user
+	result.gametype = room.gametype
+	result.gameoption = room.gameoption
+	result.result = room.gameoption
+	users.save()
+
+	del pirate_pick_number[room_seq]
+
+	prizewinner = Member.objects.get(userID = user)
+
+	msg = {	'cmd':'GAMECMD',
+			'data':{'cmd':'PIRATE_RESULT',
+			'data':{'nickname':prizewinner.nickname,'result':result.result}}}
+
+	return msg
+
+
 
 game_process = {
 	'DICE_RESULT' : proc_game_dice_result,

@@ -119,13 +119,14 @@ function process(msg){
 			$("#start_button").css('display','none');
 			$("#ready_button").css('display','none');
 			$("#unready_button").css('display','none');
+			$("#exit_button").css('display','none');
 			switch(gametype){
 				case "B" : setTimeout(startBingo, 5000); break;
 				case "D" : setTimeout(startDice , 5000); break;
 				case "L" : setTimeout(startLadder,5000); break;
 				case "P" : 
 					showUserTurn(data.data);
-					setTimeout(startPirate,0000); 
+					setTimeout(startPirate,5000); 
 					break;
 			}
 			break;
@@ -175,6 +176,7 @@ function process(msg){
 				$("#gameResult").css('display','none');
 				$("#chat").css('display','block');
 				$("#chat").text("대화 목록이 초기화 되었습니다.");
+				$("#exit_button").css('display','block');
 				if(userid == owner){
 					$("#start_button").css('display','block');
 					$("#config_change").css('display','block');

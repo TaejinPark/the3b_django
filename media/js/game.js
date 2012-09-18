@@ -26,32 +26,46 @@ function showRemainTime(){
 }
 
 
-function showResult(list){
+function showResult(data){
 	$("#turn").css('display','none');
 	var str = '<center style="margin:10px; padding:10px;" >' ;
-	for(var a=0,loopa=list.length; a<loopa; a++){
-		if(list[a].ranking == 'W' || list[a].ranking == 1) 
-			str += '<div style="font-weight:bold; font-size:200%;">';
+	if(gametype == 'D'){
+		for(var a=0,loopa=data.length; a<loopa; a++){
+			if(data[a].ranking == 'W' || data[a].ranking == 1) 
+				str += '<div style="font-weight:bold; font-size:200%;">';
+			else
+				str += '<div style="font-size:150%;">';
+			str += data[a].ranking ;
+			str += ' 등 - 주사위값 ' + data[a].value;
+			str += ' : ' + data[a].nickname + 
+					'</div>' ;
+		}
+	}
+	else if(gametype == 'P'){
+		str += 	'<div style="font-weight:bold; font-size:200%;">';
+		if(data['result']=='W')
+			str += "승리 : ";
 		else
-			str += '<div style="font-size:150%;">';
-		str += list[a].ranking ;
-		
-		if(gametype == 'D')
-			str += ' 등 - 주사위값 ' + list[a].value;
-
-		str += ' : ' + list[a].nickname + 
+			str += "패배 : ";
+		str +=  	data['nickname']+ "님." +
 				'</div>' ;
 	}
+
 	str += '</center>';
 	$("#gamedisplay").css('display','none');
+	$("#dice").css('display','none');
+	$("#pirate").css('display','none');
+	$("#ladder").css('display','none');
+	$("#bingo").css('display','none');
 	$("#gameResult").html(str).css('display','block');
+	play = false;
 }
 
 function showUserTurn(turn){
 	$("#turn").css('display','block');
 	$("#turn").html("<center>"+turn['prev']+"-> <strong>"+turn['curr']+"</strong> ->"+turn['next']+"</center>");
 	if(nickname == turn['curr']){
-		startTimeCount(5);
+		startTimeCount(25);
 		switch(gametype){
 			case "B" :  break;
 			case "L" :  break;
@@ -77,6 +91,10 @@ function game_process(data){
 	switch(cmd){
 		/* dice game cmd */
 		case "DICE_RESULT":
+				showResult(data)
+			break;
+			
+		case "PIRATE_RESULT":
 				showResult(data)
 			break;
 

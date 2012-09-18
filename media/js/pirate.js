@@ -22,6 +22,7 @@ function selectKnife(){
 }
 
 function sendKnifeNumber(knifenumber){
+	clearTimeCount();
 	sendCmd = "GAMECMD";
 	var data = parseInt(knifenumber) ;
 	data = {cmd:"PIRATE_KNIFE_SELECT",data:data};
@@ -29,11 +30,13 @@ function sendKnifeNumber(knifenumber){
 }
 
 function sendRandKnifeNumber(){
-	var select = (Math.random()*15)
+	var select = (Math.random()*15);
+	select = Math.round(select);
 	while($("#pirate table td a:eq("+select+")").attr('data-theme') == 'b'){
-		select = (Math.random()*15)
+		select = (Math.random()*15);
+		select = Math.round(select);
 	}
-	sendKnifeNumber(select)
+	sendKnifeNumber(select);
 }
 
 function pierceKnife(select){
