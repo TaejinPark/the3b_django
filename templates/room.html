@@ -5,7 +5,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">	
 		<meta name="viewport" content="width=device-width, initial-scale=1">	
-		<script src ="http://code.jquery.com/jquery-1.6.4.min.js"></script>
+		<script src ="/media/js//jquery-1.6.4.min.js"></script>
 		<link   href="/media/js/jquery/jquery.mobile-1.1.0.css" rel="stylesheet"/>
 		<script src ="/media/js/jquery/jquery.mobile-1.1.0.min.js"></script>
 		<script src ="/media/js/websocket.js"></script>
@@ -148,14 +148,14 @@
 
 			<!-- /game display-->
 			<div id="gamedisplay">
-				<!-- /game message-->
-				<div id="messageWindow">
-					<div>
-						<center id="turn">
-						</center>
-					</div>
+				<!--user's turn-->
+				<div>
+					<center id="turn">
+					</center>
 				</div>
 				<!-- /game message-->
+				<div id="messageWindow">
+				</div>
 
 				<!-- /dice game-->
 				<div id="dice">
@@ -178,7 +178,7 @@
 							this browser is not support canvas element.<br>
 							이 브라우저는 캔바스를 지원하지 않습니다.
 						</canvas>
-						<div>
+						<div>						
 							<table id="pirate_table">
 								<tr>
 									<td><a data-role="button" data-mini="true" data-inline="true" data-theme="a" value="0">1</a></td>
@@ -221,49 +221,51 @@
 
 				<!-- /bingo game-->
 				<div id="bingo">
-					<table id="bingoTable">
-						<tr>
-							<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
-							<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
-							<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
-							<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
-							<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
-						</tr>
-						<tr>
-							<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
-							<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
-							<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
-							<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
-							<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
-						</tr>
-						<tr>
-							<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
-							<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
-							<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
-							<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
-							<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
-						</tr>
-						<tr>
-							<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
-							<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
-							<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
-							<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
-							<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td><!-- 중복시 색 -->
-						</tr>
-						<tr>
-							<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td><!-- 미 선택시 색 -->
-							<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
-							<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
-							<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
-							<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
-						</tr>
-					</table>
+					<center>
+						<table id="bingoTable">
+							<tr>
+								<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
+								<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
+								<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
+								<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
+								<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
+							</tr>
+							<tr>
+								<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
+								<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
+								<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
+								<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
+								<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
+							</tr>
+							<tr>
+								<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
+								<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
+								<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
+								<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
+								<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
+							</tr>
+							<tr>
+								<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
+								<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
+								<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
+								<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
+								<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td><!-- 중복시 색 -->
+							</tr>
+							<tr>
+								<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td><!-- 미 선택시 색 -->
+								<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
+								<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
+								<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
+								<td><a data-role="button" data-mini="true" data-inline="true" data-theme="b">x</a></td>
+							</tr>
+						</table>
+					</center>
 					<div>	
-						<div>미 선택 <div id="bingoUnselect"></div> </div><!-- 숫자 선택을 모두 하지 않고 완료시 경우 미 선택 숫자 표시-->
+						<div id="bingoUnselect"></div><!-- 숫자 선택을 모두 하지 않고 완료시 경우 미 선택 숫자 표시-->
 						<br>
 						<label for="slider" class="ui-input-text ui-slider">수동 숫자 입력 (번호를 선택하고 입력할 위치를 선택하세요)</label>
 				 		<input type="range" name="slider" id="currentSelect" value="1" min="1" max="25" data-theme="e"/><!-- 게임 시작 초기 설정 -->
-						<a data-role="button" data-mini="true" data-inline="true" data-theme="b" id="inputEnd">작성 완료</a><!-- 게임 시작 초기 설정 -->
+						<a data-role="button" data-theme="a" id="inputEnd">작성 완료</a><!-- 게임 시작 초기 설정 -->
 					</div>
 					<div id="okSelect">
 						<a data-role="button" data-mini="true" data-inline="true" data-theme="b">선택 완료</a><!-- 게임 중일 경우 -->

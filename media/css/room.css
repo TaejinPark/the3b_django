@@ -66,6 +66,7 @@ body {overflow-y: hidden;}
 
 /* bingo css */
 #bingo table td a span	{width:25px;}
+#bingo table td a > span	{padding:12px;}
 #bingo > div			{margin:10px;}
 
 .textalignright			{text-align: right;}
@@ -109,6 +110,6 @@ body {overflow-y: hidden;}
 
 #debug { position: absolute; right: 0; top: 30px; border: 1px solid #000; 
 	font-size: 11px; font-family: Dotum,sans-serif; 
-	width: 400px; height: 400px; display:block;}
-#debug div { width: 400px; height: 400px; border: 1px solid #000; color: #000; text-shadow: none; overflow: auto; }
+	width: 400px; height: 100px; display:block;}
+#debug div { width: 400px; height: 100px; border: 1px solid #000; color: #000; text-shadow: none; overflow: auto; }
 #debug input { width: 400px; border: 1px solid #666; }

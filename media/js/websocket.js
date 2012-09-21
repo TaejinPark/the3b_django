@@ -121,9 +121,15 @@ function process(msg){
 			$("#unready_button").css('display','none');
 			$("#exit_button").css('display','none');
 			switch(gametype){
-				case "B" : setTimeout(startBingo, 5000); break;
-				case "D" : setTimeout(startDice , 5000); break;
-				case "L" : setTimeout(startLadder,5000); break;
+				case "B" : 
+					setTimeout(startBingo, 0000); 
+					break;
+				case "D" : 
+					setTimeout(startDice , 5000); 
+					break;
+				case "L" : 
+					setTimeout(startLadder,5000); 
+					break;
 				case "P" : 
 					showUserTurn(data.data);
 					setTimeout(startPirate,5000); 
