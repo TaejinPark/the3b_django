@@ -4,8 +4,9 @@ import random
 import ast
 import pdb
 
-temp_room_result = {} #temporary dice result storage
+
 pirate_pick_number = {}
+bingo_ready_member_list = {}
 
 #initial game setting
 def initialGameSetting(user ,room):
@@ -17,11 +18,20 @@ def initialGameSetting(user ,room):
 		pirate_pick_number.update({room.seq:pick_number})
 		turn = turnPrevCurNext(user)
 		return turn
+	elif room.gametype == 'B':
+		#set members in list
+		memlist = MemberInRoom.objects.filter(room_seq = room.seq)
+		
+		for mem in memlist:
+			bingo_ready_member_list.update({room.seq:{mem.userID:'W'}})
+		
 
 #dice functions
 def dice_cmp(dict1 , dict2):
 	return cmp(dict1.get(dict1.keys()[0]),dict2.get(dict2.keys()[0]))
 
+
+temp_room_result = {} #temporary dice result storage
 def proc_game_dice_result(user , data , request):
 	#get information
 	conn_user = MemberInRoom.objects.get(userID = user)
@@ -89,6 +99,7 @@ def proc_game_dice_result(user , data , request):
 		ret_msg = {'ret':ret,'msg':msg}
 		return ret_msg
 
+
 #pirate functions
 def proc_game_pirate_knife_select(user , data , request):
 	knifenumber = data #get knife number
@@ -145,10 +156,22 @@ def make_pirate_result(user,room_seq):
 	return msg
 
 
+#bingo functions
+def proc_game_bingo_ready(user , data , request):
+	pdb.set_trace()
+	room_seq = MemberInRoom.objects.get(userID = user).room_seq
+	bingo_ready_member_list.update({room_seq:{user:"R"}})
+	pass
+
+def proc_game_bingo_number(user , data , request):
+	pass
+
+
 
 game_process = {
-	'DICE_RESULT' : proc_game_dice_result,
-	'PIRATE_KNIFE_SELECT' : proc_game_pirate_knife_select
+	'DICE_RESULT' 			: proc_game_dice_result,
+	'PIRATE_KNIFE_SELECT' 	: proc_game_pirate_knife_select,
+	'BINGO_STAT_READY' 		: proc_game_bingo_ready
 }
 
 import operator

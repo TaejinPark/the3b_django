@@ -6,10 +6,18 @@ init_selected_number = Array() ;
 /*bingo functions*/
 function startBingo(){
 	viewPlay();
-	var i ;
+	startTimeCount(60);
+	
+	callback_function = function(){
+		fillBingoEmptyBlank();
+		sendCmd = "GAMECMD";
+		data = {cmd:"BINGO_STAT_READY",data:{}};
+		send("GAMECMD",data);
+		$("#inputEnd").parent().css('display','none');
+	}
 
 	//make selected number list
-	for( i = 0 ; i < 25 ; i++)
+	for(var i = 0 ; i < 25 ; i++)
 		init_selected_number[i] = false ;
 	viewUnselectedNumber();
 
@@ -87,17 +95,15 @@ function endInputBingoNumber(){
 	if(flag==true){
 		if(confirm("아직 작성하지 않은 빙고가 있습니다.\n입력을 완료 하시겠습니까?")){
 			fillBingoEmptyBlank();
-			return;
-		} 
+		}
 		else {
 			return;
 		}
 	}
-	
-	sendCmd = "BINGO_FILLED";
-	send("BINGO_FILLED",{});
-	interval = setInterval(forceStart,(50-currentSelectTime)*1000);
-	currentSelectTime = 49;
+	clearTimeCount();
+	sendCmd = "GAMECMD";
+	data = {cmd:"BINGO_STAT_READY",data:{}};
+	send("GAMECMD",data);
 	$("#inputEnd").parent().css('display','none');
 }
 
