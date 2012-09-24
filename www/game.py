@@ -21,9 +21,10 @@ def initialGameSetting(user ,room):
 	elif room.gametype == 'B':
 		#set members in list
 		memlist = MemberInRoom.objects.filter(room_seq = room.seq)
-		
+		tmplist = {}
 		for mem in memlist:
-			bingo_ready_member_list.update({room.seq:{mem.userID:'W'}})
+			tmplist.update({mem.userID:'W'})
+		bingo_ready_member_list.update({room.seq:tmplist})
 		
 
 #dice functions
@@ -158,12 +159,26 @@ def make_pirate_result(user,room_seq):
 
 #bingo functions
 def proc_game_bingo_ready(user , data , request):
-	pdb.set_trace()
 	room_seq = MemberInRoom.objects.get(userID = user).room_seq
-	bingo_ready_member_list.update({room_seq:{user:"R"}})
-	pass
+	bingo_ready_member_list[room_seq].update({user:"R"})
+	#find non ready member
+	for value in bingo_ready_member_list[room_seq].values():
+		if value == 'W':
+			return;
+	#if there is no non ready member, start game
+	del bingo_ready_member_list[room_seq]
+	turn = turnPrevCurNext(user)
+	msg = {'cmd':'GAMECMD','data':{'cmd':'BINGO_START','data':{'turn':turn}}}
+	ret = {'cmd':'','data':''}
+	ret_msg = {'ret':ret,'msg':msg}	
+	return ret_msg
 
-def proc_game_bingo_number(user , data , request):
+def proc_game_bingo_number_select(user , data , request):
+	turn = turnPrevCurNext(user)
+	msg = {'cmd':'GAMECMD','data':{'cmd':'BINGO_NUMBER_SELECT','data':{'turn':turn,'number':data}}}
+	ret = {'cmd':'','data':''}
+	ret_msg = {'ret':ret,'msg':msg}	
+	return ret_msg
 	pass
 
 
@@ -171,7 +186,8 @@ def proc_game_bingo_number(user , data , request):
 game_process = {
 	'DICE_RESULT' 			: proc_game_dice_result,
 	'PIRATE_KNIFE_SELECT' 	: proc_game_pirate_knife_select,
-	'BINGO_STAT_READY' 		: proc_game_bingo_ready
+	'BINGO_STAT_READY' 		: proc_game_bingo_ready,
+	'BINGO_NUMBER_SELECT' 	: proc_game_bingo_number_select
 }
 
 import operator

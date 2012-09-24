@@ -150,3 +150,56 @@ function fillBingoEmptyBlank(){
 	}
 	viewUnselectedNumber();
 }
+
+
+function selectBingoNumber(){
+	var selected_number = $(this).text()
+
+	//already selected number
+	if($(this).attr('data-theme') == 'e')
+		return;
+	
+	clearTimeCount();
+	sendCmd = "GAMECMD";
+	data = {cmd:"BINGO_NUMBER_SELECT",data:selected_number};
+	send("GAMECMD",data);
+}
+
+function checkBingo(){
+	var bingo_count = 0 ;
+	var flag_col ;
+	var flag_row ;
+	for(var i = 0 ; i < 5 ; i++){
+		flag_col = true;
+		flag_row = true;
+		for(var  j = 0 ; j < 5 ; j++){
+			//check colomn bingo
+			if($("#bingoTable a:eq("+(i+(j*5))+")").attr('data-theme') != 'e')
+				flag_col = false ;
+			//check row bingo
+			if($("#bingoTable a:eq("+((i*5)+j)+")").attr('data-theme') != 'e')
+				flag_row = false ;
+		}
+		if(flag_col == true)
+			bingo_count++;
+		if(flag_row == true)
+			bingo_count++;
+	}
+	return bingo_count ;
+}
+
+function checkBingoNumber(number){
+	for(var i = 0 ; i < 25 ; i++){
+		if($("#bingoTable a:eq("+i+")").text() == number){
+			$("#bingoTable a:eq("+i+")").buttonMarkup({theme: 'e'});
+			break;
+		}
+	}
+	var bingo_count = checkBingo();
+}
+
+function skipTurn(){
+	sendCmd = "GAMECMD";
+	data = {cmd:"BINGO_NUMBER_SELECT",data:0};
+	send("GAMECMD",data);	
+}

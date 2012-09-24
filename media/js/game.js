@@ -64,22 +64,33 @@ function showResult(data){
 function showUserTurn(turn){
 	$("#turn").css('display','block');
 	$("#turn").html("<center>"+turn['prev']+"-> <strong>"+turn['curr']+"</strong> ->"+turn['next']+"</center>");
+	$("#messageWindow").text("");
 	if(nickname == turn['curr']){
 		startTimeCount(25);
+		viewPlay();
+		$("#messageWindow").text("당신 차례입니다.");
 		switch(gametype){
-			case "B" :  break;
+			case "B" :  
+				$("#bingoTable a").click(selectBingoNumber);
+				break;
 			case "L" :  break;
 			case "P" : 
 				callback_function = sendRandKnifeNumber;
 				$('#pirate_table').css('display','block');
-			break;
+				break;
 		}
 	}
 	else{
+		if(turn['next'] == nickname)
+			$("#messageWindow").text("다음은 당신 차례입니다.");
 		switch(gametype){
-			case "B" :  break;
+			case "B" :  
+				$("#bingoTable a").unbind("click");
+				break;
 			case "L" :  break;
-			case "P" : $('#pirate_table').css('display','none'); break;
+			case "P" : 
+				$('#pirate_table').css('display','none'); 
+				break;
 		}
 	}
 }
@@ -101,39 +112,19 @@ function game_process(data){
 		/* pirate cmd */
 		case "PIRATE_KNIFE_SELECT":
 			pierceKnife(data['knifenumber']);
-			showUserTurn(data['turn'])
+			showUserTurn(data['turn']);
 			break;
 
 		case "BINGO_START": 
-			$("#remaintime").css('display','none').next().css('display','none'); 
-			$("#turn").css('display','block');
-			$("#bingoTable a").unbind("click").click(bingo);
+			showUserTurn(data['turn']);
+			callback_function = skipTurn;
 			break;
-		
-		case "BINGO_CURRENT": 
-			$("#turn > div").eq(0).text(data.data.CurrentNickname).end().eq(1).text(data.data.NextNickname);
-			currentNickname = data.data.CurrentNickname;
-			if(data.data.CurrentNickname==nickname) showMyTurn();
+
+		case "BINGO_NUMBER_SELECT":
+			showUserTurn(data['turn']);
+			callback_function = skipTurn;
+			checkBingoNumber(data['number']);
 			break;
-		
-		case "BINGO_SELECT": 
-			bingoUser = []; bingoEndUser = []; markSelect(data.data); break;
-		
-		case "BINGO_BINGO": 
-			bingoUser.push(data.data.nickname);
-			message(bingoUser.join(", ")+"님이 한줄 이상을 완성 했습니다!"+(bingoEndUser.length>0?"<br />"+bingoEndUser.join(", ")+"님이 빙고를 완성 했습니다!":""));
-			break;
-		
-		case "BINGO_LAST": 
-			bingoUser.push(data.data.nickname);
-			message((bingoUser.length>0?bingoUser.join(", ")+"님이 빙고 한줄을 완성 했습니다!":"")+bingoEndUser.join(", ")+"님이 빙고를 완성 했습니다!");
-			break;
-		
-		case "BINGO_END": 
-			showResult(data.data.result); break;
-		
-		case "INSTANCE_EXIT": 
-			setTimeout(goExit,10000); break;
 	}
 }
 
