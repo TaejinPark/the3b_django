@@ -50,6 +50,20 @@ function showResult(data){
 		str +=  	data['nickname']+ "님." +
 				'</div>' ;
 	}
+	else if(gametype == 'B'){
+		for(var a=0,loopa=data.length; a<loopa; a++){
+			if(data[a].result == 'W'){
+				str += '<div style="font-weight:bold; font-size:200%;">';
+				str += "빙고! - ";
+			}
+			else{
+				str += '<div style="font-size:150%;">';
+				str += "꽝! - ";
+			}
+			str += ' : ' + data[a].nickname + 
+					'</div>' ;
+		}
+	}
 
 	str += '</center>';
 	$("#gamedisplay").css('display','none');
@@ -116,6 +130,8 @@ function game_process(data){
 			break;
 
 		case "BINGO_START": 
+			$('#shoutbingo').css('display','block');
+			$('#shoutbingo').click(shoutbingo);
 			showUserTurn(data['turn']);
 			callback_function = skipTurn;
 			break;
@@ -125,6 +141,22 @@ function game_process(data){
 			callback_function = skipTurn;
 			checkBingoNumber(data['number']);
 			break;
+
+		case "BINGO_END":
+			clearTimeCount();
+			$('#messageWindow').html("서버로 부터 결과를 기다리는 중...");
+			var flag = 0;
+			if(checkBingo())
+				flag = 1;
+			sendCmd = "GAMECMD";
+			data = {cmd:"BINGO_RESULT",data:flag};
+			send("GAMECMD",data);
+			break;
+		
+		case "BINGO_RESULT":
+			showResult(data)
+			break;
+
 	}
 }
 

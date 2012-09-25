@@ -75,12 +75,13 @@ function process(msg){
 		case "CHANGE_SETTING": 
 			chatAppend("방 설정이 다음과 같이 변경되었습니다.");
 			chatAppend("최대 인원: "+data.data.maxuser+"명 , " + data.data.gameoption_text);
-			gametype = data.data.gametype
+			gametype = data.data.gametype;
+			gameoption = data.data.gameoption;
 			$("#maxUsers").text(data.data.maxuser); 
 			$("#gameOption").text(data.data.gameoption_text);
 			$("#gameType").text(data.data.gametype_text);
 			$("#room_config").find("input").filter("[name=maxuser]").val(data.data.maxuser).end()
-			.filter("[name=gameoption]").val(data.data.gameoption);
+			.filter("[name=gameoption]").val(gameoption);
 			break;
 		
 		case "CHANGE_OWNER": 
@@ -177,22 +178,7 @@ function process(msg){
 		case "REGAME":
 			play = false;
 			$('#gameResult center').html($('#gameResult center').html()+'잠시뒤 결과 화면이 사라지고 , 채팅화면이 나타납니다.')
-			setTimeout(function(){
-				$("#gamedisplay").css('display','none');
-				$("#gameResult").css('display','none');
-				$("#chat").css('display','block');
-				$("#chat").text("대화 목록이 초기화 되었습니다.");
-				$("#exit_button").css('display','block');
-				if(userid == owner){
-					$("#start_button").css('display','block');
-					$("#config_change").css('display','block');
-				}
-				else{
-					$("#ready_button").css('display','block');
-					$("#unready_button").css('display','none');
-				}
-				sendUserList();
-			},10000);
+			setTimeout(function(){location.href = '/room/'+room_seq+'/'},10000);
 			break;
 
 		case "BOOM":

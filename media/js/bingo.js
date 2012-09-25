@@ -185,7 +185,10 @@ function checkBingo(){
 		if(flag_row == true)
 			bingo_count++;
 	}
-	return bingo_count ;
+	if(gameoption == bingo_count)
+		return true;
+	else
+		return false;
 }
 
 function checkBingoNumber(number){
@@ -195,11 +198,23 @@ function checkBingoNumber(number){
 			break;
 		}
 	}
-	var bingo_count = checkBingo();
 }
 
 function skipTurn(){
 	sendCmd = "GAMECMD";
 	data = {cmd:"BINGO_NUMBER_SELECT",data:0};
 	send("GAMECMD",data);	
+}
+
+function shoutbingo(){
+	//shout bingo!
+	if(checkBingo()){
+		sendCmd = "GAMECMD";
+		data = {cmd:"BINGO_BINGO",data:""};
+		send("GAMECMD",data);
+		clearTimeCount();
+		$('#messageWindow').text("빙고! 서버로 부터 결과를 기다리는 중...");
+	}
+	else
+		$('#messageWindow').text("빙고가 아닙니다.");
 }

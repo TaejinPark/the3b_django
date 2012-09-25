@@ -6,7 +6,10 @@ import pdb
 
 
 pirate_pick_number = {}
+
 bingo_ready_member_list = {}
+bingo_end_room_list = []
+bingo_result_list = {}
 
 #initial game setting
 def initialGameSetting(user ,room):
@@ -32,7 +35,7 @@ def dice_cmp(dict1 , dict2):
 	return cmp(dict1.get(dict1.keys()[0]),dict2.get(dict2.keys()[0]))
 
 
-temp_room_result = {} #temporary dice result storage
+dice_result_list = {} #temporary dice result storage
 def proc_game_dice_result(user , data , request):
 	#get information
 	conn_user = MemberInRoom.objects.get(userID = user)
@@ -41,19 +44,19 @@ def proc_game_dice_result(user , data , request):
 	conn_user = Member.objects.get(userID = user)
 
 	#make temporary result data
-	if temp_room_result.get(room_seq):
-		temp_room_result[room_seq].update({conn_user.nickname:data})
+	if dice_result_list.get(room_seq):
+		dice_result_list[room_seq].update({conn_user.nickname:data})
 	else:
-		temp_room_result.update({room_seq:{conn_user.nickname:data}})
+		dice_result_list.update({room_seq:{conn_user.nickname:data}})
 
 	#make result data
-	if len(temp_room_result.get(room_seq).keys()) == room.getCurUserNumber():
+	if len(dice_result_list.get(room_seq).keys()) == room.getCurUserNumber():
 		result_list = []
-		for result in temp_room_result.get(room_seq):
-			result_list.append({result:temp_room_result[room_seq][result]})
+		for result in dice_result_list.get(room_seq):
+			result_list.append({result:dice_result_list[room_seq][result]})
 
 		#delete temporary result from temporary result list
-		temp_room_result.pop(room_seq)
+		dice_result_list.pop(room_seq)
 
 		#sort result
 		result_list.sort(cmp = dice_cmp)
@@ -181,13 +184,69 @@ def proc_game_bingo_number_select(user , data , request):
 	return ret_msg
 	pass
 
+def proc_game_bingo_bingo(user , data , request):
+	room_seq = MemberInRoom.objects.get(userID = user).room_seq
+	
+	try:
+		if bingo_end_room_list.index(room_seq):
+			return;
+	except:
+		bingo_end_room_list.append(room_seq)
+	
+	msg = {'cmd':'GAMECMD','data':{'cmd':'BINGO_END','data':''}}
+	ret = {'cmd':'','data':''}
+	ret_msg = {'ret':ret,'msg':msg}
+	return ret_msg
 
+def proc_game_bingo_result(user , data , request):
+	conn_user = MemberInRoom.objects.get(userID = user)
+	room_seq = conn_user.room_seq
+	room = Room.objects.get(seq = room_seq)
+	conn_user = Member.objects.get(userID = user)
+
+	#make bingo result data
+	if bingo_result_list.get(room_seq):
+		bingo_result_list[room_seq].update({conn_user.nickname:data})
+	else:
+		bingo_result_list.update({room_seq:{conn_user.nickname:data}})
+	
+	#make result data
+	if len(bingo_result_list.get(room_seq).keys()) == room.getCurUserNumber():
+		result_list = []
+		for result in bingo_result_list.get(room_seq):
+			result_list.append({result:bingo_result_list[room_seq][result]})
+
+		#delete bingo result from bingo result list
+		bingo_result_list.pop(room_seq)
+		#make ranking
+		for index in range(len(result_list)):
+			#make result data per member in room
+			result = Result()
+			result.userID = Member.objects.get(nickname = result_list[index].keys()[0]).userID
+			result.gametype = room.gametype
+			result.gameoption = room.gameoption
+			if result_list[index].values()[0] == 1 :
+				result.result = 'W'
+			else:
+				result.result = 'L'
+			result_list[index] = {'nickname':result_list[index].keys()[0],'result':result.result}
+			#save to database
+			#result.save()
+
+		msg = {'cmd':'RESULT','data':{'cmd':'BINGO_RESULT','data':result_list}}
+		ret = {'cmd':'','data':''}
+		ret_msg = {'ret':ret,'msg':msg}
+		return ret_msg
 
 game_process = {
 	'DICE_RESULT' 			: proc_game_dice_result,
+	
 	'PIRATE_KNIFE_SELECT' 	: proc_game_pirate_knife_select,
+	
 	'BINGO_STAT_READY' 		: proc_game_bingo_ready,
-	'BINGO_NUMBER_SELECT' 	: proc_game_bingo_number_select
+	'BINGO_NUMBER_SELECT' 	: proc_game_bingo_number_select,
+	'BINGO_BINGO'			: proc_game_bingo_bingo,
+	'BINGO_RESULT'			: proc_game_bingo_result
 }
 
 import operator

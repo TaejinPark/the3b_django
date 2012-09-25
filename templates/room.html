@@ -23,6 +23,7 @@
 			var owner = "{{owner}}";
 			var sessionid = "{{sessionid}}";
 			var gametype = "{{gametype_letter}}";
+			var gameoption = "{{gameoption}}"
 			$(document).ready(function(){
 				$.post("/checkLogin/",
 				function(data){
@@ -85,7 +86,7 @@
 				</div>
 				<div>게임 옵션 : 
 					<span id="gameOption">
-						{{gameoption}}
+						{{gameoption_text}}
 				</div>
 				<a id="config_change" onclick="view_config('room_config');" type="button" data-inline="true;">설정 변경</a>
 			</div>
@@ -269,6 +270,9 @@
 					</div>
 					<div id="okSelect">
 						<a data-role="button" data-mini="true" data-inline="true" data-theme="b">선택 완료</a><!-- 게임 중일 경우 -->
+					</div>
+					<div id="shoutbingo">
+						<a data-role="button" data-theme="b">빙고 외치기</a><!-- 게임 중일 경우 -->
 					</div>
 				</div>
 				<!-- /bingo game -->

@@ -31,8 +31,8 @@ def index(request , room_seq):
 		'maxuser'	: room.maxuser ,
 		'gametype_letter' : room.gametype ,
 		'gametype_text'	: room.get_gametype_display() ,
-		'gameoption': gameOptionToText(room) , 
-		'option'	: room.gameoption
+		'gameoption_text': gameOptionToText(room) , 
+		'gameoption'	: room.gameoption
 	}
 	return render_to_response('room.html',info)
 	
