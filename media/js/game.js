@@ -58,7 +58,7 @@ function showResult(data){
 			}
 			else{
 				str += '<div style="font-size:150%;">';
-				str += "꽝! - ";
+				str += "! - ";
 			}
 			str += ' : ' + data[a].nickname + 
 					'</div>' ;

@@ -59,7 +59,7 @@ function resizeContent()
     
     // set content size as browswer heigt - fixed header height
     if(navigator.userAgent.indexOf('iPhone') != -1 || navigator.userAgent.indexOf('iphone') != -1)
-		$("#content").css("height" , browserHeight - headerHeight - footerHeight + 65); // if browser is iphone , content height becomes more higher than PC browser
+		$("#content").css("height" , browserHeight - headerHeight - footerHeight); // if browser is iphone , content height becomes more higher than PC browser
 	else // normal browser
 		$("#content").css("height" , browserHeight - headerHeight - footerHeight);
 	

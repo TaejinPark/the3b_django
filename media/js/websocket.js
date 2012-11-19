@@ -185,6 +185,11 @@ function process(msg){
 			$('#gameResult center').html($('#gameResult center').html()+'일회성 방이므로 잠시뒤 , 자동으로 종료됩니다.')
 			setTimeout(function(){location.href = /roomlist/;},10000);
 			break;
+
+		case "COERCIVEEXIT":
+			Flag_CoreciveExit = true ;
+    		location.reload()
+			break;
 	}
 }
 
