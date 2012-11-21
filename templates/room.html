@@ -65,10 +65,11 @@
 				}
 				else if(play == true)
 				{
-					goExit();
+					if(!Flag_Regame){
+						goExit();
+					}
 					Flag_SelfCoerciveExit = true;
 				}
-
 				if(Flag_SelfCoerciveExit){
 					location.href = '/roomlist/';
 				}

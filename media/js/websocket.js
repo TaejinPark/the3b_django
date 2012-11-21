@@ -123,7 +123,7 @@ function process(msg){
 			$("#exit_button").css('display','none');
 			switch(gametype){
 				case "B" : 
-					setTimeout(startBingo, 0000); 
+					setTimeout(startBingo, 5000); 
 					break;
 				case "D" : 
 					setTimeout(startDice , 5000); 
@@ -132,8 +132,10 @@ function process(msg){
 					setTimeout(startLadder,5000); 
 					break;
 				case "P" : 
-					showUserTurn(data.data);
 					setTimeout(startPirate,5000); 
+					setTimeout(function(){
+					showUserTurn(data.data);
+							},5000);
 					break;
 			}
 			break;
@@ -143,9 +145,10 @@ function process(msg){
 			chatAppend('['+data.data.nickname+"] 님이 방에서 나갔습니다.");
 			$('.nick_'+data.data.nickname).parent().remove(); 
 			if(play && !Flag_SelfCoerciveExit){
-					alert(data.data.nickname + "님이 게임을 나가셨습니다.");
-					Flag_CoerciveExit = true ;
-					location.reload();
+				Flag_CoerciveExit = true ;
+				Flag_Regame = true ;
+				alert(data.data.nickname + "님이 게임을 나가셨습니다.");
+				location.reload();
 			}
 			break;
 		

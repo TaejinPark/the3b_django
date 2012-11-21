@@ -82,6 +82,4 @@ function initPirateGame()
 			ctx.drawImage(image_knife[KNIFENUMBER] , 0 , 0 , canvas_width , canvas_height);
 		}
 	}
-
-	$("#pirate > table > td > a").click(insertBingo);
 }
