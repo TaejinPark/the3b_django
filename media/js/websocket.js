@@ -5,7 +5,7 @@ var userlist;
 var debug = true;
 
 function init(){
-  var host = "ws://localhost:8000/WS/"+room_seq+"/";
+  var host = "ws://pirtaja.880217.org:8000/WS/"+room_seq+"/";
   try{
     socket = new WebSocket(host);
     
@@ -187,8 +187,8 @@ function process(msg){
 			break;
 
 		case "COERCIVEEXIT":
-			Flag_CoreciveExit = true ;
-    		location.reload()
+			alert(data.data + "님이 게임을 나가셨습니다.");
+			location.reload()
 			break;
 	}
 }

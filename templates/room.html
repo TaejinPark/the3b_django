@@ -24,7 +24,6 @@
 			var sessionid = "{{sessionid}}";
 			var gametype = "{{gametype_letter}}";
 			var gameoption = "{{gameoption}}";
-			var Flag_CoreciveExit = false ;
 			$(document).ready(function(){
 				$.post("/checkLogin/",
 				function(data){
@@ -51,8 +50,8 @@
 					$.post("/coerciveExit/",
 							{userID:userid,nickname:nickname},
 							function(data){
+							goExit();
 							});
-					goExit();
 					return "페이지를 이동하시면 게임이 강제 종료 됩니다.";
 				}
 			};

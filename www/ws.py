@@ -380,7 +380,7 @@ def coerciveExit(request):
 	for mir in MemberInRoom.objects.filter(room_seq = room_seq):
 		mir.ready = 'W'
 		mir.save()
-	msg = {'cmd':'COERCIVEEXIT','data':""}
+	msg = {'cmd':'COERCIVEEXIT','data':nickname}
 	msg = json.dumps(msg)
 	sendToAll(userID,msg)
 	meminroom.delete()
