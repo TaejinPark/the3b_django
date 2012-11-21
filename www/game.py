@@ -153,7 +153,7 @@ def make_pirate_result(user,room_seq):
 
 	prizewinner = Member.objects.get(userID = user)
 
-	msg = {	'cmd':'GAMECMD',
+	msg = {	'cmd':'RESULT',
 			'data':{'cmd':'PIRATE_RESULT',
 			'data':{'nickname':prizewinner.nickname,'result':result.result}}}
 

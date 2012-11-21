@@ -183,6 +183,7 @@ function process(msg){
 
 		case "REGAME":
 			play = false;
+			Flag_Regame = true ;
 			$('#gameResult center').html($('#gameResult center').html()+'잠시뒤 결과 화면이 사라지고 , 채팅화면이 나타납니다.')
 			setTimeout(function(){location.href = '/room/'+room_seq+'/'},10000);
 			break;

@@ -25,6 +25,7 @@
 			var gameoption = "{{gameoption}}";
 			var Flag_CoerciveExit = false ;
 			var Flag_SelfCoerciveExit = false ;
+			var Flag_Regame = false ;
 			$(document).ready(function(){
 				$.post("/checkLogin/",
 				function(data){
@@ -57,8 +58,10 @@
 				}
 			}
 			window.onbeforeunload=function(){
-				goExit();
 				if(Flag_CoerciveExit){
+				}
+				if(!Flag_Regame){
+					goExit();
 				}
 				else if(play == true)
 				{
