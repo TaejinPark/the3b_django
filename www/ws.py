@@ -199,6 +199,7 @@ def proc_quit(user , data , request):
 	
 	room = Room.objects.get(seq = room_seq)
 	#change owner
+#	pdb.set_trace()
 	if user == room.owner:
 		if room.getCurUserNumber() == 0:
 			#destroy the room
@@ -370,17 +371,3 @@ def webSocket(request,room_seq):
 	
 	return HttpResponse("false")
 
-@csrf_exempt
-def coerciveExit(request):
-	#pdb.set_trace()
-	userID = request.POST["userID"]
-	nickname = request.POST["nickname"]
-	meminroom = MemberInRoom.objects.get(userID = userID)
-	room_seq = meminroom.room_seq
-	for mir in MemberInRoom.objects.filter(room_seq = room_seq):
-		mir.ready = 'W'
-		mir.save()
-	msg = {'cmd':'COERCIVEEXIT','data':nickname}
-	msg = json.dumps(msg)
-	sendToAll(userID,msg)
-	meminroom.delete()

@@ -46,9 +46,6 @@ urlpatterns = patterns('',
     #websocket
     url(r'^WS/(?P<room_seq>\d+)/$','www.ws.webSocket'),
     
-    #ajax -> websocket
-    url(r'^coerciveExit/$','www.ws.coerciveExit'),
-
     #functions url
     url(r'^checkLogin/','www.functions.checkLogin'),
 

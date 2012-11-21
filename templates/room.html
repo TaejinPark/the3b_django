@@ -16,7 +16,6 @@
 		<script src ="/media/js/pirate.js"></script>
 		<link 	href="/media/css/room.css" rel="stylesheet" >
 		<script type="text/javascript">
-		
 			var room_seq = "{{room_seq}}";
 			var userid = "{{userID}}";
 			var nickname = "{{nickname}}";
@@ -24,6 +23,8 @@
 			var sessionid = "{{sessionid}}";
 			var gametype = "{{gametype_letter}}";
 			var gameoption = "{{gameoption}}";
+			var Flag_CoerciveExit = false ;
+			var Flag_SelfCoerciveExit = false ;
 			$(document).ready(function(){
 				$.post("/checkLogin/",
 				function(data){
@@ -42,20 +43,33 @@
 				});
 				$("#participant_list").css('display','none');
 				$("#chat").css('display','block');
+				chatAppend("새로고침이나 뒤로가기를 누르시면 방목록으로 이동됩니다.");
 			});
 
+			function pause(numberMillis) {
+				var now = new Date();
+				var exitTime = now.getTime() + numberMillis;
+
+				while (true) {
+					now = new Date();
+					if (now.getTime() > exitTime)
+						return;
+				}
+			}
 			window.onbeforeunload=function(){
-				if(play == true)
+				goExit();
+				if(Flag_CoerciveExit){
+				}
+				else if(play == true)
 				{
-					$.post("/coerciveExit/",
-							{userID:userid,nickname:nickname},
-							function(data){
-							goExit();
-							});
-					return "페이지를 이동하시면 게임이 강제 종료 됩니다.";
+					goExit();
+					Flag_SelfCoerciveExit = true;
+				}
+
+				if(Flag_SelfCoerciveExit){
+					location.href = '/roomlist/';
 				}
 			};
-
 		</script>
 	</head>
 	

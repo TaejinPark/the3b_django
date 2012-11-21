@@ -141,7 +141,13 @@ function process(msg){
 		case "QUIT": 
 			if(nickname==data.data.nickname) location.href="/roomlist/";
 			chatAppend('['+data.data.nickname+"] 님이 방에서 나갔습니다.");
-			$('.nick_'+data.data.nickname).parent().remove(); break;
+			$('.nick_'+data.data.nickname).parent().remove(); 
+			if(play && !Flag_SelfCoerciveExit){
+					alert(data.data.nickname + "님이 게임을 나가셨습니다.");
+					Flag_CoerciveExit = true ;
+					location.reload();
+			}
+			break;
 		
 		case "OK":
 			switch(sendCmd){
@@ -184,11 +190,6 @@ function process(msg){
 		case "BOOM":
 			$('#gameResult center').html($('#gameResult center').html()+'일회성 방이므로 잠시뒤 , 자동으로 종료됩니다.')
 			setTimeout(function(){location.href = /roomlist/;},10000);
-			break;
-
-		case "COERCIVEEXIT":
-			alert(data.data + "님이 게임을 나가셨습니다.");
-			location.reload()
 			break;
 	}
 }
